@@ -8,7 +8,45 @@ import { useAuth } from "@/hooks/use-auth";
 import Navigation from "@/components/navigation";
 import WeatherWidget from "@/components/weather-widget";
 import InteractiveMap from "@/components/interactive-map";
+import { useState, useEffect } from "react";
 
+const heroCarouselImages = [
+  "/images/hero1.jpg",
+  "/images/hero2.jpg",
+  "/images/hero3.jpg",
+  "/images/hero4.jpg",
+  "/images/hero5.jpg",
+  "/images/hero6.jpg",
+];
+
+function HeroCarousel({ images }: { images: string[] }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((i) => (i + 1) % images.length), 4000);
+    return () => clearInterval(timer);
+  }, [images.length]);
+
+  return (
+    <div className="absolute inset-0 w-full h-full z-0">
+      {images.map((img, i) => (
+        <motion.img
+          key={img}
+          src={img}
+          alt=""
+          className="object-cover w-full h-full absolute inset-0 transition-opacity duration-1000"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: i === index ? 1 : 0 }}
+          transition={{ duration: 1 }}
+          style={{ zIndex: i === index ? 1 : 0 }}
+        />
+      ))}
+    
+      {/* White overlay ON TOP of images */}
+      <div className="absolute inset-0 bg-white/50 z-10 pointer-events-none" />
+    </div>
+  );
+}
 const destinations = [
   {
     id: 1,
@@ -75,6 +113,8 @@ export default function PublicLanding() {
       
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 pb-16">
+        
+        <HeroCarousel images={heroCarouselImages} />
         <div className="absolute inset-0 bg-gradient-to-r from-teal-600/10 to-orange-600/10" />
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -82,7 +122,7 @@ export default function PublicLanding() {
           transition={{ duration: 0.8 }}
           className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
         >
-          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent mb-6">
+          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent mb-6 mt-28">
             Discover Ceylon
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
@@ -125,7 +165,7 @@ export default function PublicLanding() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-3xl md:text-4xl font-bold text-teal-600 mb-2">{stat.value}</div>
+                <div className="text-3xl md:text-4xl font-bold text-teal-700 mb-2">{stat.value}</div>
                 <div className="text-gray-600">{stat.label}</div>
               </motion.div>
             ))}
