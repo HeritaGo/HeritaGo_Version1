@@ -44,8 +44,12 @@ export default function Navigation({ isVisible = true }) {
   };
 
   const getUserInitials = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    if (user?.fullName) {
+      const names = user.fullName.split(" ");
+      if (names.length >= 2) {
+        return `${names[0][0]}${names[1][0]}`.toUpperCase();
+      }
+      return names[0][0].toUpperCase();
     }
     return user?.username?.[0]?.toUpperCase() || "U";
   };
@@ -73,10 +77,13 @@ export default function Navigation({ isVisible = true }) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-lg flex items-center justify-center">
-                <Mountain className="w-6 h-6 text-white" />
+              <div>
+                <img 
+                  src="/images/logoW.png" // Update this path to your PNG location (e.g., /logo.png or /assets/logo.png)
+                  alt="HeritaGo Logo"
+                  className="w-26 h-28"
+                />
               </div>
-              <span className="text-xl font-bold text-white">HeritaGo</span>
             </motion.div>
           </Link>
 
@@ -130,10 +137,11 @@ export default function Navigation({ isVisible = true }) {
                     <AvatarFallback className="bg-teal-600 text-white text-sm">
                       {getUserInitials()}
                     </AvatarFallback>
+                      {user.fullName || user.username}
                   </Avatar>
                   <div className="hidden lg:block">
                     <div className="text-sm text-white font-medium">
-                      {user.firstName || user.username}
+                      {user.fullName || user.username}
                     </div>
                     <Badge className={`text-xs ${getRoleColor(user.role)}`}>
                       {user.role}

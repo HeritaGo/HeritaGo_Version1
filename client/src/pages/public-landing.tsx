@@ -384,9 +384,13 @@ export default function PublicLanding() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-teal-400 to-orange-400 bg-clip-text text-transparent">
-                HeritaGo
-              </h3>
+              <div>
+                <img 
+                  src="/images/logoW.png" // Update this path to your PNG location (e.g., /logo.png or /assets/logo.png)
+                  alt="HeritaGo Logo"
+                  className="w-26 h-28"
+                />
+              </div>
               <p className="text-gray-400">
                 Your gateway to authentic Sri Lankan experiences
               </p>
