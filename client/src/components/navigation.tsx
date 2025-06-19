@@ -19,7 +19,7 @@ import {
   LogOut
 } from "lucide-react";
 
-export default function Navigation() {
+export default function Navigation({ isVisible = true }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
@@ -61,7 +61,9 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 glassmorphism-dark">
+    <nav className={`fixed top-0 w-full z-50 glassmorphism-dark transition-transform duration-300 ease-in-out ${
+      isVisible ? 'translate-y-0' : '-translate-y-full'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
