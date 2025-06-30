@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
@@ -19,8 +19,12 @@ import {
   LogOut
 } from "lucide-react";
 
-export default function Navigation({ isVisible = true }) {
+export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  
   const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
 
@@ -32,6 +36,34 @@ export default function Navigation({ isVisible = true }) {
     { href: "/community", label: "Community", icon: Users },
     { href: "/alerts", label: "Alerts", icon: Bell },
   ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Set glassmorphism effect
+      setIsScrolled(currentScrollY > 50);
+      
+      // Handle navbar visibility
+      if (currentScrollY < 10) {
+        // Always show at top
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past threshold - hide
+        setIsVisible(false);
+        // Close mobile menu when hiding navbar
+        setIsMobileMenuOpen(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const isActive = (href: string) => {
     if (href === "/" && location === "/") return true;
@@ -65,9 +97,22 @@ export default function Navigation({ isVisible = true }) {
   };
 
   return (
-    <nav className={`fixed top-0 w-full z-50 glassmorphism-dark transition-transform duration-300 ease-in-out ${
-      isVisible ? 'translate-y-0' : '-translate-y-full'
-    }`}>
+    <motion.nav 
+      initial={{ y: 0 }}
+      animate={{ 
+        y: isVisible ? 0 : -100,
+        opacity: isVisible ? 1 : 0
+      }}
+      transition={{ 
+        duration: 0.3,
+        ease: "easeInOut"
+      }}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'glassmorphism-dark shadow-lg backdrop-blur-md' 
+          : 'glassmorphism-dark'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -137,7 +182,6 @@ export default function Navigation({ isVisible = true }) {
                     <AvatarFallback className="bg-teal-600 text-white text-sm">
                       {getUserInitials()}
                     </AvatarFallback>
-                      {user.fullName || user.username}
                   </Avatar>
                   <div className="hidden lg:block">
                     <div className="text-sm text-white font-medium">
@@ -243,6 +287,6 @@ export default function Navigation({ isVisible = true }) {
           )}
         </AnimatePresence>
       </div>
-    </nav>
+    </motion.nav>
   );
 }

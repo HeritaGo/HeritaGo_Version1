@@ -106,49 +106,11 @@ const hotels = [
 
 export default function PublicLanding() {
   const { user } = useAuth();
-    const [isNavVisible, setIsNavVisible] = useState(true);
-  
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Show nav when scrolling up or at top
-      if (currentScrollY < lastScrollY || currentScrollY < 100) {
-        setIsNavVisible(true);
-      } 
-      // Hide nav when scrolling down (and not near top)
-      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsNavVisible(false);
-      }
-      
-      lastScrollY = currentScrollY;
-      
-      // Handle parallax for glassmorphism layers
-      const parallaxBg = document.querySelector('.parallax-bg') as HTMLElement | null;
-      const parallaxMid = document.querySelector('.parallax-mid') as HTMLElement | null;
-      const parallaxFg = document.querySelector('.parallax-fg') as HTMLElement | null;
-      
-      if (parallaxBg && parallaxMid && parallaxFg) {
-        const bgSpeed = currentScrollY * 0.1;
-        const midSpeed = currentScrollY * 0.3;
-        const fgSpeed = currentScrollY * 0.5;
-        
-        parallaxBg.style.transform = `translate(-50%, -50%) translateY(${bgSpeed}px)`;
-        parallaxMid.style.transform = `translate(-50%, -50%) translateY(${midSpeed}px)`;
-        parallaxFg.style.transform = `translate(-50%, -50%) translateY(${fgSpeed}px)`;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-orange-50">
-       {/* Navigation with scroll hide/show */}
-      <Navigation isVisible={isNavVisible} />
+   
+      <Navigation />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 pb-16">
