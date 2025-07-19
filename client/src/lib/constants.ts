@@ -82,7 +82,7 @@ export const POPULAR_CITIES = [
 export const EMERGENCY_CONTACTS = {
   POLICE: '119',
   FIRE: '110',
-  AMBULANCE: '108',
+  AMBULANCE: '1990',
   TOURIST_HOTLINE: '1912',
 } as const;
 
@@ -131,7 +131,7 @@ export const AI_CHATBOT_RESPONSES = {
   WELCOME: "Hello! I'm your AI travel assistant for Sri Lanka. How can I help you plan your perfect adventure today?",
   TRIP_PLANNING: "I can help you plan an amazing trip! What type of experience interests you - beaches, mountains, cultural sites, or wildlife?",
   WEATHER: "Sri Lanka has a tropical climate. The weather is generally warm year-round. Would you like specific weather information for a particular region?",
-  EMERGENCY: "For emergencies in Sri Lanka: Police (119), Fire (110), Ambulance (108). I can also provide current safety alerts for your location.",
+  EMERGENCY: "For emergencies in Sri Lanka: Police (119), Fire (110), Ambulance (1990). I can also provide current safety alerts for your location.",
   HOTELS: "I can suggest great hotels based on your preferences. Which region are you planning to visit?",
   GEAR: "We have various gear available for rent including camping equipment, hiking gear, cameras, and water sports equipment. What do you need?",
   DEFAULT: "Feel free to ask me about destinations, hotels, gear rentals, weather, emergency information, or trip planning!",

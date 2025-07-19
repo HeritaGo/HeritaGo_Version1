@@ -190,7 +190,7 @@ export default function AIChatbot() {
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold">Ceylon AI Assistant</CardTitle>
+                      <CardTitle className="text-lg font-semibold">HeritaGo AI Assistant</CardTitle>
                       <p className="text-white/80 text-sm">Always here to help you explore 🇱🇰</p>
                     </div>
                   </div>

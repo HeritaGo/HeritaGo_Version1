@@ -145,3 +145,12 @@ CREATE INDEX idx_quest_progress_user_id ON quest_progress(user_id);
 -- Grant permissions (adjust as needed)
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO username;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO username;
+
+
+CREATE TABLE chat_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  message TEXT NOT NULL,
+  response TEXT NOT NULL,
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);

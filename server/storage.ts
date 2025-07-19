@@ -8,7 +8,7 @@ import {
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
-const MemoryStore = createMemoryStore(session);
+const MemoryStore = createMemoryStore(session); 
 
 export interface IStorage {
   // User management

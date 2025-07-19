@@ -230,7 +230,7 @@ export default function AlertsPage() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-red-700">Ambulance:</span>
-                            <span className="font-semibold text-red-800">108</span>
+                            <span className="font-semibold text-red-800">1990</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-red-700">Tourist Hotline:</span>

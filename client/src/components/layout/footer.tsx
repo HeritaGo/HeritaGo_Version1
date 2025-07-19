@@ -193,7 +193,7 @@ export default function Footer() {
             <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500">
               <span>Police: 119</span>
               <span>Fire: 110</span>
-              <span>Ambulance: 108</span>
+              <span>Ambulance: 1990</span>
               <span>Tourist Hotline: 1912</span>
             </div>
           </div>

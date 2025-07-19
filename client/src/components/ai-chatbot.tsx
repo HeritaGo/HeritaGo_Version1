@@ -7,19 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  MessageCircle, 
-  Send, 
-  X, 
-  MapPin, 
-  Hotel, 
-  Cloud, 
-  AlertTriangle, 
+import {
+  MessageCircle,
+  Send,
+  X,
+  MapPin,
+  Hotel,
+  Cloud,
+  AlertTriangle,
   Camera,
   Mountain,
   Waves,
   Star,
-  Calendar
+  Calendar,
 } from "lucide-react";
 
 interface ChatMessage {
@@ -30,12 +30,36 @@ interface ChatMessage {
 }
 
 const quickActions = [
-  { label: "Plan Trip", icon: MapPin, prompt: "Help me plan a 3-day trip to Sri Lanka" },
-  { label: "Find Hotels", icon: Hotel, prompt: "Find me the best hotels in Kandy under LKR 15,000" },
-  { label: "Weather Info", icon: Cloud, prompt: "What's the weather like in Ella this week?" },
-  { label: "Emergency Help", icon: AlertTriangle, prompt: "I need emergency contact information" },
-  { label: "Photography Spots", icon: Camera, prompt: "Best photography locations in Sri Lanka" },
-  { label: "Adventure Activities", icon: Mountain, prompt: "What adventure activities can I do in Sri Lanka?" }
+  {
+    label: "Plan Trip",
+    icon: MapPin,
+    prompt: "Help me plan a 3-day trip to Sri Lanka",
+  },
+  {
+    label: "Find Hotels",
+    icon: Hotel,
+    prompt: "Find me the best hotels in Kandy under LKR 15,000",
+  },
+  {
+    label: "Weather Info",
+    icon: Cloud,
+    prompt: "What's the weather like in Ella this week?",
+  },
+  {
+    label: "Emergency Help",
+    icon: AlertTriangle,
+    prompt: "I need emergency contact information",
+  },
+  {
+    label: "Photography Spots",
+    icon: Camera,
+    prompt: "Best photography locations in Sri Lanka",
+  },
+  {
+    label: "Adventure Activities",
+    icon: Mountain,
+    prompt: "What adventure activities can I do in Sri Lanka?",
+  },
 ];
 
 export default function AIChatbot() {
@@ -46,8 +70,8 @@ export default function AIChatbot() {
       id: "welcome",
       content: `Welcome to HeritaGo! I'm your AI travel assistant for Sri Lanka. I can help you with:\n\n• Planning personalized trips\n• Finding hotels and accommodations\n• Weather updates and alerts\n• Local recommendations\n• Emergency information\n\nHow can I assist you today? 🇱🇰`,
       isUser: false,
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -55,34 +79,57 @@ export default function AIChatbot() {
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await apiRequest("POST", "/api/ai-chat", { 
-        message, 
-        context: { 
-          user: user ? { role: user.role, location: "Sri Lanka" } : null 
-        } 
-      });
-      return await response.json();
+      try {
+        const response = await apiRequest("POST", "/api/chat/message", {
+          message,
+          userId: user?.id,
+          context: [
+            {
+              role: "system",
+              content: `You are an AI travel assistant for Sri Lanka. 
+                       Provide accurate information about:
+                       - Tourist destinations and heritage sites
+                       - Local customs and etiquette
+                       - Travel tips and recommendations
+                       - Weather and best times to visit
+                       - Local cuisine and dining
+                       - Transportation options
+                       - Emergency services
+                       Always be helpful, concise, and culturally sensitive.`,
+            },
+          ],
+        });
+        
+        const data = await response.json();
+        
+        // Add typing animation delay for more natural feel
+        if (data.isFromFallback) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        return data;
     },
     onSuccess: (data) => {
       const aiMessage: ChatMessage = {
         id: Date.now().toString() + "_ai",
         content: data.response,
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
       setIsTyping(false);
     },
     onError: () => {
       const errorMessage: ChatMessage = {
         id: Date.now().toString() + "_error",
-        content: "I'm sorry, I'm having trouble responding right now. Please try again in a moment.",
+        content:
+          "I'm sorry, I'm having trouble responding right now. Please try again in a moment.",
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
       setIsTyping(false);
-    }
+    },
   });
 
   const scrollToBottom = () => {
@@ -101,10 +148,10 @@ export default function AIChatbot() {
       id: Date.now().toString(),
       content: messageToSend,
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
@@ -116,7 +163,7 @@ export default function AIChatbot() {
   };
 
   const formatTimestamp = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -182,7 +229,9 @@ export default function AIChatbot() {
                 </Avatar>
                 <div>
                   <h3 className="font-semibold">Ceylon AI Assistant</h3>
-                  <p className="text-xs text-white/80">Always here to help • Online</p>
+                  <p className="text-xs text-white/80">
+                    Always here to help • Online
+                  </p>
                 </div>
               </div>
               <Badge className="bg-white/20 text-white border-0">
@@ -198,7 +247,9 @@ export default function AIChatbot() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
+                  className={`flex ${
+                    message.isUser ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div className="flex items-start space-x-2 max-w-[80%]">
                     {!message.isUser && (
@@ -212,9 +263,10 @@ export default function AIChatbot() {
                       <div
                         className={`
                           p-3 rounded-2xl shadow-sm
-                          ${message.isUser 
-                            ? "bg-primary text-white rounded-br-sm" 
-                            : "bg-white text-slate-800 rounded-bl-sm border border-slate-200"
+                          ${
+                            message.isUser
+                              ? "bg-primary text-white rounded-br-sm"
+                              : "bg-white text-slate-800 rounded-bl-sm border border-slate-200"
                           }
                         `}
                       >
@@ -222,7 +274,11 @@ export default function AIChatbot() {
                           {message.content}
                         </p>
                       </div>
-                      <p className={`text-xs text-slate-400 mt-1 ${message.isUser ? "text-right" : "text-left"}`}>
+                      <p
+                        className={`text-xs text-slate-400 mt-1 ${
+                          message.isUser ? "text-right" : "text-left"
+                        }`}
+                      >
                         {formatTimestamp(message.timestamp)}
                       </p>
                     </div>
@@ -236,7 +292,7 @@ export default function AIChatbot() {
                   </div>
                 </motion.div>
               ))}
-              
+
               {/* Typing Indicator */}
               {isTyping && (
                 <motion.div
@@ -252,9 +308,18 @@ export default function AIChatbot() {
                     </Avatar>
                     <div className="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-200 shadow-sm">
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                        <div
+                          className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0ms" }}
+                        />
+                        <div
+                          className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "150ms" }}
+                        />
+                        <div
+                          className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "300ms" }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -266,7 +331,9 @@ export default function AIChatbot() {
             {/* Quick Actions */}
             {messages.length <= 1 && (
               <div className="p-4 border-t bg-white">
-                <p className="text-xs text-slate-600 mb-3 text-center">Quick actions to get started:</p>
+                <p className="text-xs text-slate-600 mb-3 text-center">
+                  Quick actions to get started:
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   {quickActions.slice(0, 4).map((action) => {
                     const Icon = action.icon;
@@ -312,7 +379,7 @@ export default function AIChatbot() {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               {/* Additional Quick Actions */}
               <div className="flex flex-wrap gap-1 mt-2">
                 {quickActions.slice(4).map((action) => {
