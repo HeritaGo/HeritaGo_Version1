@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import DestinationCard from "@/components/ui/destination-card";
 import InteractiveMap from "@/components/map/interactive-map";
 import { Input } from "@/components/ui/input";
@@ -29,17 +29,19 @@ export default function DestinationsPage() {
   });
 
   const filteredDestinations = destinations?.filter((dest: any) => {
-    const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         dest.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         dest.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || dest.category === selectedCategory;
+    const matchesSearch =
+      dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dest.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dest.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || dest.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-r from-teal-600 to-orange-500 text-white">
@@ -52,9 +54,10 @@ export default function DestinationsPage() {
             >
               <h1 className="text-5xl font-bold mb-6">Discover Sri Lanka</h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-                From ancient kingdoms to pristine beaches, explore the diverse beauty and rich heritage of the Pearl of the Indian Ocean.
+                From ancient kingdoms to pristine beaches, explore the diverse
+                beauty and rich heritage of the Pearl of the Indian Ocean.
               </p>
-              
+
               {/* Search and Filters */}
               <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -85,13 +88,15 @@ export default function DestinationsPage() {
                     </Button>
                   </div>
                 </div>
-                
+
                 {/* Category Filters */}
                 <div className="flex flex-wrap gap-3 justify-center">
                   {categories.map((category) => (
                     <Badge
                       key={category.id}
-                      variant={selectedCategory === category.id ? "default" : "outline"}
+                      variant={
+                        selectedCategory === category.id ? "default" : "outline"
+                      }
                       className={`cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-200 ${
                         selectedCategory === category.id
                           ? "bg-white text-teal-600"
@@ -126,7 +131,11 @@ export default function DestinationsPage() {
                       {filteredDestinations?.length || 0} Destinations Found
                     </h2>
                     <p className="text-slate-600">
-                      {selectedCategory !== "all" && `in ${categories.find(c => c.id === selectedCategory)?.name}`}
+                      {selectedCategory !== "all" &&
+                        `in ${
+                          categories.find((c) => c.id === selectedCategory)
+                            ?.name
+                        }`}
                       {searchTerm && ` matching "${searchTerm}"`}
                     </p>
                   </div>
@@ -136,7 +145,10 @@ export default function DestinationsPage() {
                 {isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[...Array(6)].map((_, i) => (
-                      <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                      <div
+                        key={i}
+                        className="bg-white rounded-2xl shadow-lg p-6 animate-pulse"
+                      >
                         <div className="bg-slate-200 h-48 rounded-xl mb-4"></div>
                         <div className="bg-slate-200 h-6 rounded mb-2"></div>
                         <div className="bg-slate-200 h-4 rounded mb-4"></div>
@@ -146,16 +158,18 @@ export default function DestinationsPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredDestinations?.map((destination: any, index: number) => (
-                      <motion.div
-                        key={destination.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.1 }}
-                      >
-                        <DestinationCard destination={destination} />
-                      </motion.div>
-                    ))}
+                    {filteredDestinations?.map(
+                      (destination: any, index: number) => (
+                        <motion.div
+                          key={destination.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: index * 0.1 }}
+                        >
+                          <DestinationCard destination={destination} />
+                        </motion.div>
+                      )
+                    )}
                   </div>
                 )}
 
@@ -166,8 +180,12 @@ export default function DestinationsPage() {
                     className="text-center py-16"
                   >
                     <i className="fas fa-search text-6xl text-slate-300 mb-4"></i>
-                    <h3 className="text-2xl font-semibold text-slate-600 mb-2">No destinations found</h3>
-                    <p className="text-slate-500">Try adjusting your search or filter criteria</p>
+                    <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                      No destinations found
+                    </h3>
+                    <p className="text-slate-500">
+                      Try adjusting your search or filter criteria
+                    </p>
                   </motion.div>
                 )}
               </>
@@ -185,7 +203,7 @@ export default function DestinationsPage() {
       </div>
 
       <Footer />
-      <AIChatbot />
+      <Chatbot />
     </div>
   );
 }

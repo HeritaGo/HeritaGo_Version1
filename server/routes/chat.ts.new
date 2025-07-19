@@ -1,0 +1,91 @@
+import { Router, Request, Response } from "express";
+import { db } from "../db";
+import { chatHistory } from "../../shared/schema/chat";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { z } from "zod";
+
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+const router = Router();
+
+// Message validation schema
+const messageSchema = z.object({
+  message: z.string(),
+  userId: z.string().optional(),
+  context: z.any().optional(),
+});
+
+// Function to call Gemini service
+async function callGeminiService(
+  message: string,
+  userContext?: any
+): Promise<string> {
+  try {
+    // Prepare the prompt with context
+    const prompt = `You are HeritaGo AI Assistant 🤖, a friendly and enthusiastic guide for Sri Lanka tourism! 🇱🇰
+
+Context: ${JSON.stringify(userContext)}
+
+User's question: ${message}
+
+Guidelines:
+- Always use relevant emojis throughout your responses
+- Structure your answers with clear sections and bullet points
+- Be enthusiastic and engaging, like a friend showing around their home country
+- Include specific recommendations and insider tips
+- Keep responses concise but packed with valuable information
+- Add local phrases or greetings when appropriate
+- End responses with an encouraging message or question
+
+Remember: You're not just providing information - you're helping create memorable experiences in Sri Lanka! ✨`;
+
+    // Get AI response
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    throw error;
+  }
+}
+
+// Chat message endpoint
+router.post("/message", async (req: Request, res: Response) => {
+  try {
+    const { message, userId, context } = messageSchema.parse(req.body);
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ 
+        error: "Chatbot is not configured",
+        details: "GEMINI_API_KEY is not set" 
+      });
+    }
+
+    // Get response from Gemini
+    const response = await callGeminiService(message, context);
+
+    // Save chat message to database
+    await db.insert(chatHistory).values({
+      userId: userId || "",
+      message: message,
+      response: response,
+      timestamp: new Date(),
+    });
+
+    res.json({
+      response,
+      timestamp: new Date().toISOString(),
+      isFromFallback: false,
+    });
+  } catch (error) {
+    console.error("Chat Error:", error);
+    res.status(500).json({
+      error: "Failed to process chat message",
+      details: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
+export default router;

@@ -6,21 +6,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, X, Send, Bot, User, MapPin, Hotel, Cloud, AlertTriangle } from "lucide-react";
+import {
+  MessageCircle,
+  X,
+  Send,
+  Bot,
+  User,
+  MapPin,
+  Hotel,
+  Cloud,
+  AlertTriangle,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface ChatMessage {
-  id: number;
+  id: string;
   content: string;
   isUser: boolean;
   timestamp: Date;
 }
 
 const quickActions = [
-  { label: "Plan Trip", icon: MapPin, message: "Help me plan a 3-day trip to Sri Lanka" },
-  { label: "Find Hotels", icon: Hotel, message: "Show me hotels near Kandy under LKR 10,000 per night" },
-  { label: "Weather Info", icon: Cloud, message: "What's the weather like in Colombo today?" },
-  { label: "Emergency", icon: AlertTriangle, message: "I need emergency contact information for Sri Lanka" },
+  {
+    label: "Plan Trip",
+    icon: MapPin,
+    message: "Help me plan a 3-day trip to Sri Lanka",
+  },
+  {
+    label: "Find Hotels",
+    icon: Hotel,
+    message: "Show me hotels near Kandy under LKR 10,000 per night",
+  },
+  {
+    label: "Weather Info",
+    icon: Cloud,
+    message: "What's the weather like in Colombo today?",
+  },
+  {
+    label: "Emergency",
+    icon: AlertTriangle,
+    message: "I need emergency contact information for Sri Lanka",
+  },
 ];
 
 export default function ChatBot() {
@@ -28,14 +54,14 @@ export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: 1,
-      content: "Hello! I'm your AI travel assistant for Sri Lanka. How can I help you explore the Pearl of the Indian Ocean today? 🇱🇰",
+      id: "welcome",
+      content:
+        "Hello! I'm your AI travel assistant for Sri Lanka. How can I help you explore the Pearl of the Indian Ocean today? 🇱🇰",
       isUser: false,
       timestamp: new Date(),
-    }
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
-  const [messageIdCounter, setMessageIdCounter] = useState(2);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const chatMutation = useMutation({
@@ -45,30 +71,29 @@ export default function ChatBot() {
         context: {
           userId: user?.id,
           userRole: user?.role,
-        }
+        },
       });
       return response.json();
     },
     onSuccess: (data) => {
       const newMessage: ChatMessage = {
-        id: messageIdCounter + 1,
+        id: Date.now().toString(),
         content: data.response,
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, newMessage]);
-      setMessageIdCounter(prev => prev + 2);
+      setMessages((prev) => [...prev, newMessage]);
     },
     onError: () => {
       const errorMessage: ChatMessage = {
-        id: messageIdCounter + 1,
-        content: "Sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        id: Date.now().toString(),
+        content:
+          "Sorry, I'm having trouble connecting right now. Please try again in a moment.",
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
-      setMessageIdCounter(prev => prev + 2);
-    }
+      setMessages((prev) => [...prev, errorMessage]);
+    },
   });
 
   const scrollToBottom = () => {
@@ -85,27 +110,27 @@ export default function ChatBot() {
 
     // Add user message
     const userMessage: ChatMessage = {
-      id: messageIdCounter,
+      id: Date.now().toString(),
       content: message,
       isUser: true,
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
 
     // Send to API
     chatMutation.mutate(message);
   };
 
-  const handleQuickAction = (action: typeof quickActions[0]) => {
+  const handleQuickAction = (action: (typeof quickActions)[0]) => {
     handleSendMessage(action.message);
   };
 
   const formatTime = (timestamp: Date) => {
-    return timestamp.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
+    return timestamp.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   };
 
@@ -130,7 +155,9 @@ export default function ChatBot() {
                     </div>
                     <div>
                       <div className="font-semibold">Ceylon AI Assistant</div>
-                      <div className="text-xs opacity-80">Always here to help</div>
+                      <div className="text-xs opacity-80">
+                        Always here to help
+                      </div>
                     </div>
                   </div>
                   <Button
@@ -152,29 +179,43 @@ export default function ChatBot() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${
+                      message.isUser ? "justify-end" : "justify-start"
+                    }`}
                   >
-                    <div className={`flex items-start space-x-2 max-w-[85%] ${message.isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        message.isUser 
-                          ? 'bg-primary text-white' 
-                          : 'bg-secondary text-white'
-                      }`}>
+                    <div
+                      className={`flex items-start space-x-2 max-w-[85%] ${
+                        message.isUser ? "flex-row-reverse space-x-reverse" : ""
+                      }`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          message.isUser
+                            ? "bg-primary text-white"
+                            : "bg-secondary text-white"
+                        }`}
+                      >
                         {message.isUser ? (
                           <User className="h-4 w-4" />
                         ) : (
                           <Bot className="h-4 w-4" />
                         )}
                       </div>
-                      <div className={`rounded-lg p-3 ${
-                        message.isUser 
-                          ? 'bg-primary text-white' 
-                          : 'bg-slate-100 text-slate-800'
-                      }`}>
-                        <p className="text-sm leading-relaxed">{message.content}</p>
-                        <div className={`text-xs mt-1 opacity-70 ${
-                          message.isUser ? 'text-white' : 'text-slate-600'
-                        }`}>
+                      <div
+                        className={`rounded-lg p-3 ${
+                          message.isUser
+                            ? "bg-primary text-white"
+                            : "bg-slate-100 text-slate-800"
+                        }`}
+                      >
+                        <p className="text-sm leading-relaxed">
+                          {message.content}
+                        </p>
+                        <div
+                          className={`text-xs mt-1 opacity-70 ${
+                            message.isUser ? "text-white" : "text-slate-600"
+                          }`}
+                        >
                           {formatTime(message.timestamp)}
                         </div>
                       </div>
@@ -195,8 +236,14 @@ export default function ChatBot() {
                       <div className="bg-slate-100 rounded-lg p-3">
                         <div className="flex space-x-1">
                           <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" />
-                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                          <div
+                            className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.1s" }}
+                          />
+                          <div
+                            className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.2s" }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -235,7 +282,7 @@ export default function ChatBot() {
                     placeholder="Type your message..."
                     className="flex-1 text-sm"
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
+                      if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         handleSendMessage();
                       }
@@ -258,10 +305,7 @@ export default function ChatBot() {
       </AnimatePresence>
 
       {/* Toggle Button */}
-      <motion.div
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
+      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
         <Button
           onClick={() => setIsOpen(!isOpen)}
           className="w-16 h-16 rounded-full bg-gradient-ceylon shadow-2xl border-0 relative"
@@ -289,7 +333,7 @@ export default function ChatBot() {
               </motion.div>
             )}
           </AnimatePresence>
-          
+
           {/* Pulse animation */}
           <div className="absolute inset-0 rounded-full bg-gradient-ceylon animate-pulse-glow opacity-75" />
         </Button>

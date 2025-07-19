@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import TouristDashboard from "@/components/dashboard/tourist-dashboard";
 import GuideDashboard from "@/components/dashboard/guide-dashboard";
 import VendorDashboard from "@/components/dashboard/vendor-dashboard";
@@ -31,7 +31,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
       <Navbar />
-      
+
       <div className="pt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -47,13 +47,13 @@ export default function DashboardPage() {
               Welcome back, {user.fullName}! Here's your personalized overview.
             </p>
           </div>
-          
+
           {renderDashboard()}
         </motion.div>
       </div>
 
       <Footer />
-      <AIChatbot />
+      <Chatbot />
     </div>
   );
 }

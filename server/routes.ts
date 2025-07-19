@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { z } from "zod";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   insertDestinationSchema,
   insertHotelSchema,
@@ -333,11 +333,12 @@ Let me share with you:
 Make the response inspiring and enthusiastic! Include practical tips and hidden gems! ✨`;
       }
 
-      // Prepare conversation history for OpenAI
-      const messages = [
-        {
-          role: "system" as const,
-          content: `You are HeritaGo AI Assistant 🤖, a friendly and enthusiastic guide for Sri Lanka tourism! 🇱🇰
+      // Initialize Gemini AI (using Flash 1.5 instead of Pro)
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      // Prepare chat prompt
+      const prompt = `You are HeritaGo AI Assistant 🤖, a friendly and enthusiastic guide for Sri Lanka tourism! 🇱🇰
 
 Response Guidelines:
 - Always use relevant emojis throughout your responses
@@ -351,36 +352,25 @@ Response Guidelines:
 
 Current date: ${new Date().toLocaleDateString()} 📅
 
-Remember: You're not just providing information - you're helping create memorable experiences in Sri Lanka! ✨`,
-        },
-        {
-          role: "user" as const,
-          content: `${aiPrompt}\n\nUser's question: ${messageData.message}`,
-        },
-      ];
+${aiPrompt}
 
-      const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-      });
+User's question: ${messageData.message}
+
+Remember: You're not just providing information - you're helping create memorable experiences in Sri Lanka! ✨`;
 
       // Get AI response
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 500,
-      });
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const text = response.text();
 
-      const response = completion.choices[0].message.content;
-
-      // Store the conversation
-      const chatMessage = await storage.createChatMessage({
+      // Save the chat interaction
+      await storage.createChatMessage({
         ...messageData,
-        response,
+        response: text,
       });
 
       res.json({
-        ...chatMessage,
+        message: text,
         context: {
           destinations: destinations?.length || 0,
           hotels: hotels?.length || 0,

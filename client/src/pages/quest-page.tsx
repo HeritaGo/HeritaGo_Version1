@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -127,31 +127,34 @@ export default function QuestPage() {
   });
 
   // Calculate user level and progress
-  const totalPoints = questProgress?.reduce((sum: number, quest: any) => sum + quest.points, 0) || 0;
+  const totalPoints =
+    questProgress?.reduce((sum: number, quest: any) => sum + quest.points, 0) ||
+    0;
   const userLevel = Math.floor(totalPoints / 1000) + 1;
-  const pointsToNextLevel = ((userLevel * 1000) - totalPoints);
+  const pointsToNextLevel = userLevel * 1000 - totalPoints;
   const levelProgress = ((totalPoints % 1000) / 1000) * 100;
 
   const getQuestsByCategory = (categoryId: string) => {
     if (!destinations) return [];
-    return destinations.filter((dest: any) => 
-      categoryId === "all" || dest.category === categoryId
+    return destinations.filter(
+      (dest: any) => categoryId === "all" || dest.category === categoryId
     );
   };
 
   const isQuestCompleted = (destinationId: number) => {
-    return questProgress?.some((quest: any) => 
-      quest.destinationId === destinationId && quest.isCompleted
+    return questProgress?.some(
+      (quest: any) => quest.destinationId === destinationId && quest.isCompleted
     );
   };
 
-  const completedQuests = questProgress?.filter((quest: any) => quest.isCompleted).length || 0;
+  const completedQuests =
+    questProgress?.filter((quest: any) => quest.isCompleted).length || 0;
   const totalQuests = destinations?.length || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-500 text-white">
@@ -164,9 +167,11 @@ export default function QuestPage() {
             >
               <h1 className="text-5xl font-bold mb-6">Quest Mode</h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-                Turn your Sri Lankan adventure into an exciting quest! Complete challenges, earn points, and unlock achievements as you explore Ceylon.
+                Turn your Sri Lankan adventure into an exciting quest! Complete
+                challenges, earn points, and unlock achievements as you explore
+                Ceylon.
               </p>
-              
+
               {user && (
                 <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -175,25 +180,36 @@ export default function QuestPage() {
                       <div className="text-white/80">Explorer Level</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold mb-2">{totalPoints.toLocaleString()}</div>
+                      <div className="text-3xl font-bold mb-2">
+                        {totalPoints.toLocaleString()}
+                      </div>
                       <div className="text-white/80">Total Points</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold mb-2">{completedQuests}/{totalQuests}</div>
+                      <div className="text-3xl font-bold mb-2">
+                        {completedQuests}/{totalQuests}
+                      </div>
                       <div className="text-white/80">Quests Completed</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold mb-2">{achievements.filter(a => a.earned).length}</div>
+                      <div className="text-3xl font-bold mb-2">
+                        {achievements.filter((a) => a.earned).length}
+                      </div>
                       <div className="text-white/80">Achievements</div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6">
                     <div className="flex justify-between text-sm mb-2">
                       <span>Level {userLevel} Progress</span>
-                      <span>{pointsToNextLevel} points to Level {userLevel + 1}</span>
+                      <span>
+                        {pointsToNextLevel} points to Level {userLevel + 1}
+                      </span>
                     </div>
-                    <Progress value={levelProgress} className="h-3 bg-white/20" />
+                    <Progress
+                      value={levelProgress}
+                      className="h-3 bg-white/20"
+                    />
                   </div>
                 </div>
               )}
@@ -210,7 +226,9 @@ export default function QuestPage() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">Quest Categories</h2>
+              <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                Quest Categories
+              </h2>
               <p className="text-xl text-slate-600 max-w-2xl mx-auto">
                 Choose your adventure path and start earning points
               </p>
@@ -227,10 +245,14 @@ export default function QuestPage() {
                   onClick={() => setSelectedCategory(category.id)}
                 >
                   <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div className={`h-32 bg-gradient-to-br ${category.color} relative overflow-hidden`}>
+                    <div
+                      className={`h-32 bg-gradient-to-br ${category.color} relative overflow-hidden`}
+                    >
                       <div className="absolute inset-0 bg-black/20"></div>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <i className={`${category.icon} text-white text-4xl`}></i>
+                        <i
+                          className={`${category.icon} text-white text-4xl`}
+                        ></i>
                       </div>
                       <div className="absolute top-4 right-4">
                         <Badge className="bg-white/20 text-white">
@@ -239,15 +261,25 @@ export default function QuestPage() {
                       </div>
                     </div>
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">{category.name}</h3>
-                      <p className="text-slate-600 text-sm mb-4">{category.description}</p>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">
+                        {category.name}
+                      </h3>
+                      <p className="text-slate-600 text-sm mb-4">
+                        {category.description}
+                      </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-500">
-                          {getQuestsByCategory(category.id).filter((dest: any) => 
-                            isQuestCompleted(dest.id)
-                          ).length} completed
+                          {
+                            getQuestsByCategory(category.id).filter(
+                              (dest: any) => isQuestCompleted(dest.id)
+                            ).length
+                          }{" "}
+                          completed
                         </span>
-                        <Button size="sm" className="group-hover:shadow-lg transition-all duration-300">
+                        <Button
+                          size="sm"
+                          className="group-hover:shadow-lg transition-all duration-300"
+                        >
                           Start Quest
                         </Button>
                       </div>
@@ -278,75 +310,94 @@ export default function QuestPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6 }}
                     >
-                      <h3 className="text-2xl font-bold text-slate-800 mb-6">Available Quests</h3>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-6">
+                        Available Quests
+                      </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {destinations?.slice(0, 6).map((destination: any, index: number) => {
-                          const isCompleted = isQuestCompleted(destination.id);
-                          return (
-                            <motion.div
-                              key={destination.id}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.6, delay: index * 0.1 }}
-                            >
-                              <Card className={`overflow-hidden border-2 transition-all duration-300 ${
-                                isCompleted 
-                                  ? 'border-green-200 bg-green-50' 
-                                  : 'border-transparent hover:border-purple-200 hover:shadow-lg'
-                              }`}>
-                                <div className="relative h-32 bg-gradient-to-r from-purple-400 to-pink-400">
-                                  <div className="absolute inset-0 bg-black/20"></div>
-                                  <div className="absolute top-4 left-4">
-                                    <Badge className={`${
-                                      isCompleted 
-                                        ? 'bg-green-500 text-white' 
-                                        : 'bg-white/20 text-white'
-                                    }`}>
-                                      {isCompleted ? 'Completed' : 'Available'}
-                                    </Badge>
+                        {destinations
+                          ?.slice(0, 6)
+                          .map((destination: any, index: number) => {
+                            const isCompleted = isQuestCompleted(
+                              destination.id
+                            );
+                            return (
+                              <motion.div
+                                key={destination.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                  duration: 0.6,
+                                  delay: index * 0.1,
+                                }}
+                              >
+                                <Card
+                                  className={`overflow-hidden border-2 transition-all duration-300 ${
+                                    isCompleted
+                                      ? "border-green-200 bg-green-50"
+                                      : "border-transparent hover:border-purple-200 hover:shadow-lg"
+                                  }`}
+                                >
+                                  <div className="relative h-32 bg-gradient-to-r from-purple-400 to-pink-400">
+                                    <div className="absolute inset-0 bg-black/20"></div>
+                                    <div className="absolute top-4 left-4">
+                                      <Badge
+                                        className={`${
+                                          isCompleted
+                                            ? "bg-green-500 text-white"
+                                            : "bg-white/20 text-white"
+                                        }`}
+                                      >
+                                        {isCompleted
+                                          ? "Completed"
+                                          : "Available"}
+                                      </Badge>
+                                    </div>
+                                    <div className="absolute top-4 right-4">
+                                      <Badge className="bg-yellow-500 text-white">
+                                        <i className="fas fa-star mr-1"></i>
+                                        100 pts
+                                      </Badge>
+                                    </div>
+                                    <div className="absolute bottom-4 left-4 right-4">
+                                      <h4 className="text-white font-bold text-lg">
+                                        {destination.name}
+                                      </h4>
+                                    </div>
                                   </div>
-                                  <div className="absolute top-4 right-4">
-                                    <Badge className="bg-yellow-500 text-white">
-                                      <i className="fas fa-star mr-1"></i>
-                                      100 pts
-                                    </Badge>
-                                  </div>
-                                  <div className="absolute bottom-4 left-4 right-4">
-                                    <h4 className="text-white font-bold text-lg">{destination.name}</h4>
-                                  </div>
-                                </div>
-                                <CardContent className="p-4">
-                                  <p className="text-slate-600 text-sm mb-3 line-clamp-2">
-                                    {destination.description}
-                                  </p>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-slate-500 flex items-center">
-                                      <i className="fas fa-map-marker-alt mr-1"></i>
-                                      {destination.location}
-                                    </span>
-                                    <Button 
-                                      size="sm" 
-                                      variant={isCompleted ? "outline" : "default"}
-                                      disabled={isCompleted}
-                                    >
-                                      {isCompleted ? (
-                                        <>
-                                          <i className="fas fa-check mr-2"></i>
-                                          Completed
-                                        </>
-                                      ) : (
-                                        <>
-                                          <i className="fas fa-play mr-2"></i>
-                                          Start
-                                        </>
-                                      )}
-                                    </Button>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </motion.div>
-                          );
-                        })}
+                                  <CardContent className="p-4">
+                                    <p className="text-slate-600 text-sm mb-3 line-clamp-2">
+                                      {destination.description}
+                                    </p>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs text-slate-500 flex items-center">
+                                        <i className="fas fa-map-marker-alt mr-1"></i>
+                                        {destination.location}
+                                      </span>
+                                      <Button
+                                        size="sm"
+                                        variant={
+                                          isCompleted ? "outline" : "default"
+                                        }
+                                        disabled={isCompleted}
+                                      >
+                                        {isCompleted ? (
+                                          <>
+                                            <i className="fas fa-check mr-2"></i>
+                                            Completed
+                                          </>
+                                        ) : (
+                                          <>
+                                            <i className="fas fa-play mr-2"></i>
+                                            Start
+                                          </>
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </motion.div>
+                            );
+                          })}
                       </div>
                     </motion.div>
                   </div>
@@ -361,12 +412,18 @@ export default function QuestPage() {
                         <div className="space-y-4">
                           <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                              <span className="text-white text-2xl font-bold">{userLevel}</span>
+                              <span className="text-white text-2xl font-bold">
+                                {userLevel}
+                              </span>
                             </div>
-                            <div className="text-lg font-semibold text-slate-800">Explorer Level {userLevel}</div>
-                            <div className="text-sm text-slate-600">{totalPoints.toLocaleString()} total points</div>
+                            <div className="text-lg font-semibold text-slate-800">
+                              Explorer Level {userLevel}
+                            </div>
+                            <div className="text-sm text-slate-600">
+                              {totalPoints.toLocaleString()} total points
+                            </div>
                           </div>
-                          
+
                           <div>
                             <div className="flex justify-between text-sm mb-2">
                               <span>Progress to Level {userLevel + 1}</span>
@@ -389,7 +446,9 @@ export default function QuestPage() {
                               <i className="fas fa-check text-green-600"></i>
                             </div>
                             <div>
-                              <div className="font-medium">Completed Galle Fort</div>
+                              <div className="font-medium">
+                                Completed Galle Fort
+                              </div>
                               <div className="text-slate-500">+100 points</div>
                             </div>
                           </div>
@@ -398,8 +457,12 @@ export default function QuestPage() {
                               <i className="fas fa-trophy text-blue-600"></i>
                             </div>
                             <div>
-                              <div className="font-medium">Achievement Unlocked</div>
-                              <div className="text-slate-500">Heritage Master</div>
+                              <div className="font-medium">
+                                Achievement Unlocked
+                              </div>
+                              <div className="text-slate-500">
+                                Heritage Master
+                              </div>
                             </div>
                           </div>
                           <div className="flex items-center space-x-3">
@@ -408,7 +471,9 @@ export default function QuestPage() {
                             </div>
                             <div>
                               <div className="font-medium">Level Up!</div>
-                              <div className="text-slate-500">Reached Level {userLevel}</div>
+                              <div className="text-slate-500">
+                                Reached Level {userLevel}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -424,7 +489,9 @@ export default function QuestPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
                 >
-                  <h3 className="text-2xl font-bold text-slate-800 mb-6">Achievements</h3>
+                  <h3 className="text-2xl font-bold text-slate-800 mb-6">
+                    Achievements
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {achievements.map((achievement, index) => (
                       <motion.div
@@ -433,27 +500,37 @@ export default function QuestPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.1 }}
                       >
-                        <Card className={`${
-                          achievement.earned 
-                            ? 'border-yellow-200 bg-yellow-50' 
-                            : 'border-gray-200 bg-gray-50'
-                        } transition-all duration-300 hover:shadow-lg`}>
+                        <Card
+                          className={`${
+                            achievement.earned
+                              ? "border-yellow-200 bg-yellow-50"
+                              : "border-gray-200 bg-gray-50"
+                          } transition-all duration-300 hover:shadow-lg`}
+                        >
                           <CardContent className="p-6 text-center">
-                            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                              achievement.earned 
-                                ? 'bg-yellow-500 text-white' 
-                                : 'bg-gray-300 text-gray-500'
-                            }`}>
+                            <div
+                              className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                                achievement.earned
+                                  ? "bg-yellow-500 text-white"
+                                  : "bg-gray-300 text-gray-500"
+                              }`}
+                            >
                               <i className={`${achievement.icon} text-2xl`}></i>
                             </div>
-                            <h4 className="font-bold text-lg mb-2">{achievement.name}</h4>
-                            <p className="text-slate-600 text-sm mb-4">{achievement.description}</p>
+                            <h4 className="font-bold text-lg mb-2">
+                              {achievement.name}
+                            </h4>
+                            <p className="text-slate-600 text-sm mb-4">
+                              {achievement.description}
+                            </p>
                             <div className="flex items-center justify-center space-x-2">
-                              <Badge className={`${
-                                achievement.earned 
-                                  ? 'bg-yellow-500 text-white' 
-                                  : 'bg-gray-200 text-gray-600'
-                              }`}>
+                              <Badge
+                                className={`${
+                                  achievement.earned
+                                    ? "bg-yellow-500 text-white"
+                                    : "bg-gray-200 text-gray-600"
+                                }`}
+                              >
                                 <i className="fas fa-star mr-1"></i>
                                 {achievement.points} points
                               </Badge>
@@ -480,8 +557,13 @@ export default function QuestPage() {
                   className="text-center py-16"
                 >
                   <i className="fas fa-trophy text-6xl text-slate-300 mb-4"></i>
-                  <h3 className="text-2xl font-semibold text-slate-600 mb-2">Leaderboard Coming Soon</h3>
-                  <p className="text-slate-500">Compete with other travelers and see who's the ultimate Sri Lanka explorer!</p>
+                  <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                    Leaderboard Coming Soon
+                  </h3>
+                  <p className="text-slate-500">
+                    Compete with other travelers and see who's the ultimate Sri
+                    Lanka explorer!
+                  </p>
                 </motion.div>
               </TabsContent>
             </Tabs>

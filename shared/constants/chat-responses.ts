@@ -8,7 +8,8 @@ export const FALLBACK_RESPONSES = {
 
 How can I assist you today? 🇱🇰`,
 
-  ERROR: "I apologize, but I'm having trouble connecting to my knowledge base. Let me provide you with some general information instead.",
+  ERROR:
+    "I apologize, but I'm having trouble connecting to my knowledge base. Let me provide you with some general information instead.",
 
   RESPONSES: {
     "plan trip": `Here's a suggested 3-day itinerary for Sri Lanka:
@@ -49,7 +50,7 @@ Would you like more specific details about any of these locations?`,
 
 Would you like to know more about any of these hotels?`,
 
-    "weather": `Current weather in Sri Lanka:
+    weather: `Current weather in Sri Lanka:
 
 Colombo: 28-32°C, Partly cloudy
 Kandy: 23-27°C, Light rain expected
@@ -61,7 +62,7 @@ Monsoon seasons:
 - Southwest: May to September
 - Northeast: October to February`,
 
-    "emergency": `Important emergency contacts in Sri Lanka:
+    emergency: `Important emergency contacts in Sri Lanka:
 
 Police: 119
 Ambulance: 1990
@@ -74,7 +75,7 @@ Major Hospitals:
 - Kandy General: +94 81 2233337
 - Galle Hospital: +94 91 2232276`,
 
-    "photography": `Best photography locations in Sri Lanka:
+    photography: `Best photography locations in Sri Lanka:
 
 1. Sigiriya Rock Fortress
 - Best time: Sunrise
@@ -96,7 +97,7 @@ Major Hospitals:
 - Best time: Early morning
 - Tip: World's End viewpoint is spectacular`,
 
-    "adventure": `Popular adventure activities in Sri Lanka:
+    adventure: `Popular adventure activities in Sri Lanka:
 
 1. White Water Rafting
 - Location: Kitulgala
@@ -121,6 +122,6 @@ Major Hospitals:
 5. Scuba Diving
 - Trincomalee
 - Unawatuna
-- Pigeon Island`
-  }
+- Pigeon Island`,
+  },
 };

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
-import ChatBot from "@/components/ChatBot";
+import Chatbot from "@/components/chatbot";
 import Map from "@/components/Map";
 import WeatherWidget from "@/components/WeatherWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Star, Search, Filter, Mountain, Waves, TreePine, Landmark, Camera } from "lucide-react";
+import {
+  MapPin,
+  Star,
+  Search,
+  Filter,
+  Mountain,
+  Waves,
+  TreePine,
+  Landmark,
+  Camera,
+} from "lucide-react";
 import type { Destination } from "@shared/schema";
 
 const categories = [
@@ -25,16 +35,19 @@ const categories = [
 export default function Destinations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
+  const [selectedDestination, setSelectedDestination] =
+    useState<Destination | null>(null);
 
   const { data: destinations = [], isLoading } = useQuery<Destination[]>({
     queryKey: ["/api/destinations"],
   });
 
   const filteredDestinations = destinations.filter((dest) => {
-    const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         dest.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || dest.category === selectedCategory;
+    const matchesSearch =
+      dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dest.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || dest.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -45,7 +58,7 @@ export default function Destinations() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Header */}
         <section className="bg-gradient-ceylon text-white py-16">
@@ -60,7 +73,8 @@ export default function Destinations() {
                 Discover Sri Lanka
               </h1>
               <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-                Explore breathtaking destinations with real-time weather updates and local insights
+                Explore breathtaking destinations with real-time weather updates
+                and local insights
               </p>
             </motion.div>
           </div>
@@ -69,7 +83,6 @@ export default function Destinations() {
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
             {/* Left Sidebar - Filters & Search */}
             <div className="space-y-6">
               <Card>
@@ -87,13 +100,19 @@ export default function Destinations() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="mb-4"
                   />
-                  
+
                   <div className="space-y-2">
-                    <h4 className="font-medium text-sm text-muted-foreground mb-3">Categories</h4>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-3">
+                      Categories
+                    </h4>
                     {categories.map((category) => (
                       <Button
                         key={category.id}
-                        variant={selectedCategory === category.id ? "default" : "outline"}
+                        variant={
+                          selectedCategory === category.id
+                            ? "default"
+                            : "outline"
+                        }
                         size="sm"
                         className="w-full justify-start"
                         onClick={() => setSelectedCategory(category.id)}
@@ -119,7 +138,7 @@ export default function Destinations() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <Map 
+                  <Map
                     destinations={filteredDestinations}
                     onDestinationSelect={handleDestinationSelect}
                     selectedDestination={selectedDestination}
@@ -132,8 +151,14 @@ export default function Destinations() {
           {/* Destinations Grid */}
           <div className="mt-12">
             <h2 className="text-2xl font-bold mb-6">
-              {selectedCategory === "all" ? "All Destinations" : `${categories.find(c => c.id === selectedCategory)?.label} Destinations`}
-              <span className="text-muted-foreground ml-2">({filteredDestinations.length})</span>
+              {selectedCategory === "all"
+                ? "All Destinations"
+                : `${
+                    categories.find((c) => c.id === selectedCategory)?.label
+                  } Destinations`}
+              <span className="text-muted-foreground ml-2">
+                ({filteredDestinations.length})
+              </span>
             </h2>
 
             {isLoading ? (
@@ -158,16 +183,18 @@ export default function Destinations() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                   >
-                    <Card 
+                    <Card
                       className={`group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden ${
-                        selectedDestination?.id === destination.id ? "ring-2 ring-primary" : ""
+                        selectedDestination?.id === destination.id
+                          ? "ring-2 ring-primary"
+                          : ""
                       }`}
                       onClick={() => handleDestinationSelect(destination)}
                     >
                       <div className="relative h-48 overflow-hidden">
                         {destination.imageUrl ? (
-                          <img 
-                            src={destination.imageUrl} 
+                          <img
+                            src={destination.imageUrl}
                             alt={destination.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -177,8 +204,8 @@ export default function Destinations() {
                           </div>
                         )}
                         <div className="absolute top-4 left-4">
-                          <Badge 
-                            variant="secondary" 
+                          <Badge
+                            variant="secondary"
                             className="bg-background/90 text-foreground capitalize"
                           >
                             {destination.category}
@@ -187,7 +214,9 @@ export default function Destinations() {
                         {destination.rating > 0 && (
                           <div className="absolute top-4 right-4 bg-background/90 rounded-full px-2 py-1 flex items-center space-x-1">
                             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs font-medium">{destination.rating}</span>
+                            <span className="text-xs font-medium">
+                              {destination.rating}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -201,7 +230,9 @@ export default function Destinations() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center text-muted-foreground text-sm">
                             <MapPin className="h-3 w-3 mr-1" />
-                            <span>{destination.weatherZone || "Sri Lanka"}</span>
+                            <span>
+                              {destination.weatherZone || "Sri Lanka"}
+                            </span>
                           </div>
                           <Button size="sm" variant="outline">
                             View Details
@@ -217,7 +248,9 @@ export default function Destinations() {
             {!isLoading && filteredDestinations.length === 0 && (
               <Card className="p-8 text-center">
                 <MapPin className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No destinations found</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No destinations found
+                </h3>
                 <p className="text-muted-foreground">
                   Try adjusting your search terms or category filters.
                 </p>
@@ -227,7 +260,7 @@ export default function Destinations() {
         </div>
       </div>
 
-      <ChatBot />
+      <Chatbot />
     </div>
   );
 }

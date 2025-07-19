@@ -1,163 +1,90 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { db } from "../db";
-import { OpenAI } from "openai";
 import { chatHistory } from "../../shared/schema/chat";
-import { eq, desc } from "drizzle-orm";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { z } from "zod";
+
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 const router = Router();
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// Message validation schema
+const messageSchema = z.object({
+  message: z.string(),
+  userId: z.string().optional(),
+  context: z.any().optional(),
 });
 
-// Store chat history in the database
-interface ChatMessage {
-  userId: string;
-  message: string;
-  response: string;
-  timestamp: Date;
+// Function to call Gemini service
+async function callGeminiService(
+  message: string,
+  userContext?: any
+): Promise<string> {
+  try {
+    // Prepare the prompt with context
+    const prompt = `You are HeritaGo AI Assistant 🤖, a friendly and enthusiastic guide for Sri Lanka tourism! 🇱🇰
+
+Context: ${JSON.stringify(userContext)}
+
+User's question: ${message}
+
+Guidelines:
+- Always use relevant emojis throughout your responses
+- Structure your answers with clear sections and bullet points
+- Be enthusiastic and engaging, like a friend showing around their home country
+- Include specific recommendations and insider tips
+- Keep responses concise but packed with valuable information
+- Add local phrases or greetings when appropriate
+- End responses with an encouraging message or question
+
+Remember: You're not just providing information - you're helping create memorable experiences in Sri Lanka! ✨`;
+
+    // Get AI response
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    throw error;
+  }
 }
 
-router.post("/message", async (req, res) => {
+// Chat message endpoint
+router.post("/message", async (req: Request, res: Response) => {
   try {
-    const { message, userId, context } = req.body;
-    
-    // Import fallback responses
-    const { FALLBACK_RESPONSES } = await import('../../shared/constants/chat-responses');
+    const { message, userId, context } = messageSchema.parse(req.body);
 
-    // Function to get fallback response
-    const getFallbackResponse = (message: string) => {
-      const lowercaseMsg = message.toLowerCase();
-      
-      // Check for keywords and return appropriate response
-      if (lowercaseMsg.includes('plan') && lowercaseMsg.includes('trip')) return FALLBACK_RESPONSES.RESPONSES["plan trip"];
-      if (lowercaseMsg.includes('hotel') || lowercaseMsg.includes('stay')) return FALLBACK_RESPONSES.RESPONSES["find hotels"];
-      if (lowercaseMsg.includes('weather')) return FALLBACK_RESPONSES.RESPONSES["weather"];
-      if (lowercaseMsg.includes('emergency')) return FALLBACK_RESPONSES.RESPONSES["emergency"];
-      if (lowercaseMsg.includes('photo') || lowercaseMsg.includes('camera')) return FALLBACK_RESPONSES.RESPONSES["photography"];
-      if (lowercaseMsg.includes('adventure') || lowercaseMsg.includes('activity')) return FALLBACK_RESPONSES.RESPONSES["adventure"];
-      
-      // Default response if no keywords match
-      return "I can help you with planning trips, finding hotels, checking weather, emergency information, photography spots, and adventure activities. What would you like to know about?";
-    };
-
-    // Check if OpenAI is available
-    if (!process.env.OPENAI_API_KEY) {
-      const fallbackResponse = getFallbackResponse(message);
-      return res.json({ 
-        response: fallbackResponse,
-        timestamp: new Date().toISOString(),
-        isFromFallback: true
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        error: "Chatbot is not configured",
+        details: "GEMINI_API_KEY is not set",
       });
     }
 
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
+    // Get response from Gemini
+    const response = await callGeminiService(message, context);
 
-    // Prepare conversation history for OpenAI
-    const messages = [
-      {
-        role: "system",
-        content: `You are HeritaGo AI Assistant, an expert guide for tourists exploring Sri Lanka. Your knowledge includes:
-
-        CULTURAL HERITAGE:
-        - Ancient cities (Anuradhapura, Polonnaruwa, Sigiriya)
-        - Temples and religious sites
-        - Traditional arts and crafts
-        - Local festivals and ceremonies
-
-        TRAVEL INFORMATION:
-        - Best times to visit each region
-        - Transportation options and tips
-        - Accommodation recommendations
-        - Local cuisine and dining etiquette
-        
-        PRACTICAL ADVICE:
-        - Weather patterns and seasonal changes
-        - Safety tips and emergency contacts
-        - Local customs and dress codes
-        - Currency and payment methods
-        
-        EXPERIENCES:
-        - Wildlife safaris and national parks
-        - Beach destinations
-        - Tea plantation tours
-        - Adventure activities
-
-        Provide accurate, culturally sensitive information in a friendly, concise manner. Focus on authentic experiences while ensuring tourist safety and comfort.`,
-      },
-      ...(Array.isArray(context) ? context : []), // Ensure context is an array
-      {
-        role: "user",
-        content: message,
-      },
-    ];
-
-    // Get response from OpenAI
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Using 3.5-turbo as it's more widely available
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 500,
+    // Save chat message to database
+    await db.insert(chatHistory).values({
+      userId: userId || "",
+      message: message,
+      response: response,
+      timestamp: new Date(),
     });
 
-    const aiResponse = completion.choices[0].message.content;
-
-    try {
-      // Store the conversation in the database
-      if (userId) {
-        await db.insert(chatHistory).values({
-          userId,
-          message,
-          response: aiResponse || "",
-          timestamp: new Date(),
-        });
-      }
-
-      res.json({
-        response: aiResponse,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (dbError) {
-      console.error("Database Error:", dbError);
-      // Still return the AI response even if DB storage fails
-      res.json({
-        response: aiResponse,
-        timestamp: new Date().toISOString(),
-        warning: "Failed to save chat history",
-      });
-    }
-  } catch (error: any) {
-    console.error("Chat API Error:", error);
-    
-    // Use fallback response system when OpenAI fails
-    const fallbackResponse = getFallbackResponse(message);
     res.json({
-      response: fallbackResponse,
+      response,
       timestamp: new Date().toISOString(),
-      isFromFallback: true,
-      warning: "Using offline response system due to API issues"
+      isFromFallback: false,
     });
-  }
-});
-
-// Get chat history for a user
-router.get("/history/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const history = await db
-      .select()
-      .from(chatHistory)
-      .where(eq(chatHistory.userId, userId))
-      .orderBy(desc(chatHistory.timestamp))
-      .limit(50);
-
-    res.json(history);
   } catch (error) {
-    console.error("Chat History Error:", error);
-    res.status(500).json({ error: "Failed to fetch chat history" });
+    console.error("Chat Error:", error);
+    res.status(500).json({
+      error: "Failed to process chat message",
+      details: error instanceof Error ? error.message : String(error),
+    });
   }
 });
 

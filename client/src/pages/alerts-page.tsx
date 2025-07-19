@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import AlertCard from "@/components/ui/alert-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,30 +34,43 @@ export default function AlertsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSeverity, setSelectedSeverity] = useState("all");
 
-  const { data: alerts, isLoading, refetch } = useQuery({
+  const {
+    data: alerts,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["/api/alerts"],
     refetchInterval: 60000, // Refetch every minute for real-time updates
   });
 
   const filteredAlerts = alerts?.filter((alert: any) => {
-    const matchesSearch = alert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         alert.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (alert.location && alert.location.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === "all" || alert.category === selectedCategory;
-    const matchesSeverity = selectedSeverity === "all" || alert.severity === selectedSeverity;
-    return matchesSearch && matchesCategory && matchesSeverity && alert.isActive;
+    const matchesSearch =
+      alert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alert.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (alert.location &&
+        alert.location.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory =
+      selectedCategory === "all" || alert.category === selectedCategory;
+    const matchesSeverity =
+      selectedSeverity === "all" || alert.severity === selectedSeverity;
+    return (
+      matchesSearch && matchesCategory && matchesSeverity && alert.isActive
+    );
   });
 
   const getAlertStats = () => {
     if (!alerts) return { total: 0, critical: 0, high: 0, medium: 0, low: 0 };
-    
-    return alerts.reduce((stats: any, alert: any) => {
-      if (alert.isActive) {
-        stats.total++;
-        stats[alert.severity] = (stats[alert.severity] || 0) + 1;
-      }
-      return stats;
-    }, { total: 0, critical: 0, high: 0, medium: 0, low: 0 });
+
+    return alerts.reduce(
+      (stats: any, alert: any) => {
+        if (alert.isActive) {
+          stats.total++;
+          stats[alert.severity] = (stats[alert.severity] || 0) + 1;
+        }
+        return stats;
+      },
+      { total: 0, critical: 0, high: 0, medium: 0, low: 0 }
+    );
   };
 
   const alertStats = getAlertStats();
@@ -65,7 +78,7 @@ export default function AlertsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-red-50">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-r from-red-600 to-orange-500 text-white">
@@ -78,9 +91,10 @@ export default function AlertsPage() {
             >
               <h1 className="text-5xl font-bold mb-6">Emergency Alerts</h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-                Stay informed with real-time safety alerts, weather updates, and important notifications for your Sri Lankan adventure.
+                Stay informed with real-time safety alerts, weather updates, and
+                important notifications for your Sri Lankan adventure.
               </p>
-              
+
               <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <Input
                   placeholder="Search alerts by location, type, or keyword..."
@@ -103,7 +117,9 @@ export default function AlertsPage() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-center"
               >
-                <div className="text-3xl font-bold text-slate-800">{alertStats.total}</div>
+                <div className="text-3xl font-bold text-slate-800">
+                  {alertStats.total}
+                </div>
                 <div className="text-slate-600">Active Alerts</div>
               </motion.div>
               <motion.div
@@ -112,7 +128,9 @@ export default function AlertsPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-center"
               >
-                <div className="text-3xl font-bold text-red-600">{alertStats.critical || 0}</div>
+                <div className="text-3xl font-bold text-red-600">
+                  {alertStats.critical || 0}
+                </div>
                 <div className="text-slate-600">Critical</div>
               </motion.div>
               <motion.div
@@ -121,7 +139,9 @@ export default function AlertsPage() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-center"
               >
-                <div className="text-3xl font-bold text-orange-600">{alertStats.high || 0}</div>
+                <div className="text-3xl font-bold text-orange-600">
+                  {alertStats.high || 0}
+                </div>
                 <div className="text-slate-600">High Priority</div>
               </motion.div>
               <motion.div
@@ -130,7 +150,9 @@ export default function AlertsPage() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-center"
               >
-                <div className="text-3xl font-bold text-yellow-600">{alertStats.medium || 0}</div>
+                <div className="text-3xl font-bold text-yellow-600">
+                  {alertStats.medium || 0}
+                </div>
                 <div className="text-slate-600">Medium</div>
               </motion.div>
               <motion.div
@@ -139,7 +161,9 @@ export default function AlertsPage() {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="text-center"
               >
-                <div className="text-3xl font-bold text-blue-600">{alertStats.low || 0}</div>
+                <div className="text-3xl font-bold text-blue-600">
+                  {alertStats.low || 0}
+                </div>
                 <div className="text-slate-600">Low Priority</div>
               </motion.div>
             </div>
@@ -175,10 +199,14 @@ export default function AlertsPage() {
                           {alertCategories.map((category) => (
                             <Badge
                               key={category.id}
-                              variant={selectedCategory === category.id ? "default" : "outline"}
+                              variant={
+                                selectedCategory === category.id
+                                  ? "default"
+                                  : "outline"
+                              }
                               className={`cursor-pointer w-full justify-start p-3 ${
-                                selectedCategory === category.id 
-                                  ? "bg-red-600 text-white" 
+                                selectedCategory === category.id
+                                  ? "bg-red-600 text-white"
                                   : "hover:bg-slate-50"
                               }`}
                               onClick={() => setSelectedCategory(category.id)}
@@ -199,10 +227,14 @@ export default function AlertsPage() {
                           {severityLevels.map((level) => (
                             <Badge
                               key={level.id}
-                              variant={selectedSeverity === level.id ? "default" : "outline"}
+                              variant={
+                                selectedSeverity === level.id
+                                  ? "default"
+                                  : "outline"
+                              }
                               className={`cursor-pointer w-full justify-start p-3 ${
-                                selectedSeverity === level.id 
-                                  ? "bg-red-600 text-white" 
+                                selectedSeverity === level.id
+                                  ? "bg-red-600 text-white"
                                   : `${level.color} hover:opacity-80`
                               }`}
                               onClick={() => setSelectedSeverity(level.id)}
@@ -222,19 +254,29 @@ export default function AlertsPage() {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-red-700">Police:</span>
-                            <span className="font-semibold text-red-800">119</span>
+                            <span className="font-semibold text-red-800">
+                              119
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-red-700">Fire:</span>
-                            <span className="font-semibold text-red-800">110</span>
+                            <span className="font-semibold text-red-800">
+                              110
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-red-700">Ambulance:</span>
-                            <span className="font-semibold text-red-800">1990</span>
+                            <span className="font-semibold text-red-800">
+                              1990
+                            </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-red-700">Tourist Hotline:</span>
-                            <span className="font-semibold text-red-800">1912</span>
+                            <span className="text-red-700">
+                              Tourist Hotline:
+                            </span>
+                            <span className="font-semibold text-red-800">
+                              1912
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -255,7 +297,9 @@ export default function AlertsPage() {
                 <div className="lg:w-3/4">
                   <TabsList className="grid w-full grid-cols-2 mb-8">
                     <TabsTrigger value="active">Active Alerts</TabsTrigger>
-                    <TabsTrigger value="notifications">My Notifications</TabsTrigger>
+                    <TabsTrigger value="notifications">
+                      My Notifications
+                    </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="active" className="space-y-6">
@@ -270,20 +314,31 @@ export default function AlertsPage() {
                           {filteredAlerts?.length || 0} Active Alerts
                         </h2>
                         <p className="text-slate-600">
-                          {selectedCategory !== "all" && `${alertCategories.find(c => c.id === selectedCategory)?.name} alerts`}
-                          {selectedSeverity !== "all" && ` • ${selectedSeverity} priority`}
+                          {selectedCategory !== "all" &&
+                            `${
+                              alertCategories.find(
+                                (c) => c.id === selectedCategory
+                              )?.name
+                            } alerts`}
+                          {selectedSeverity !== "all" &&
+                            ` • ${selectedSeverity} priority`}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2 text-sm text-slate-500">
                         <i className="fas fa-clock"></i>
-                        <span>Last updated: {new Date().toLocaleTimeString()}</span>
+                        <span>
+                          Last updated: {new Date().toLocaleTimeString()}
+                        </span>
                       </div>
                     </motion.div>
 
                     {isLoading ? (
                       <div className="space-y-4">
                         {[...Array(3)].map((_, i) => (
-                          <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                          <div
+                            key={i}
+                            className="bg-white rounded-2xl shadow-lg p-6 animate-pulse"
+                          >
                             <div className="flex items-start space-x-4">
                               <div className="bg-slate-200 w-12 h-12 rounded-full"></div>
                               <div className="flex-1 space-y-2">
@@ -317,8 +372,13 @@ export default function AlertsPage() {
                         className="text-center py-16"
                       >
                         <i className="fas fa-shield-alt text-6xl text-slate-300 mb-4"></i>
-                        <h3 className="text-2xl font-semibold text-slate-600 mb-2">No active alerts</h3>
-                        <p className="text-slate-500">Great news! There are currently no alerts matching your criteria.</p>
+                        <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                          No active alerts
+                        </h3>
+                        <p className="text-slate-500">
+                          Great news! There are currently no alerts matching
+                          your criteria.
+                        </p>
                       </motion.div>
                     )}
                   </TabsContent>
@@ -326,8 +386,12 @@ export default function AlertsPage() {
                   <TabsContent value="notifications" className="space-y-6">
                     <div className="text-center py-16">
                       <i className="fas fa-bell text-6xl text-slate-300 mb-4"></i>
-                      <h3 className="text-2xl font-semibold text-slate-600 mb-2">Notification Center</h3>
-                      <p className="text-slate-500 mb-6">Personalized alerts and notifications will appear here.</p>
+                      <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                        Notification Center
+                      </h3>
+                      <p className="text-slate-500 mb-6">
+                        Personalized alerts and notifications will appear here.
+                      </p>
                       {!user && (
                         <Button className="bg-red-600 hover:bg-red-700">
                           Sign In to View Notifications
@@ -350,9 +414,12 @@ export default function AlertsPage() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">Safety Tips for Sri Lanka</h2>
+              <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                Safety Tips for Sri Lanka
+              </h2>
               <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                Essential safety guidelines to ensure a secure and enjoyable journey
+                Essential safety guidelines to ensure a secure and enjoyable
+                journey
               </p>
             </motion.div>
 
@@ -366,9 +433,12 @@ export default function AlertsPage() {
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                   <i className="fas fa-cloud-rain text-blue-600 text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-3">Weather Awareness</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                  Weather Awareness
+                </h3>
                 <p className="text-slate-600 text-sm">
-                  Check weather conditions before traveling. Monsoon seasons can affect road conditions and outdoor activities.
+                  Check weather conditions before traveling. Monsoon seasons can
+                  affect road conditions and outdoor activities.
                 </p>
               </motion.div>
 
@@ -381,9 +451,12 @@ export default function AlertsPage() {
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
                   <i className="fas fa-medkit text-green-600 text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-3">Health Precautions</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                  Health Precautions
+                </h3>
                 <p className="text-slate-600 text-sm">
-                  Carry basic medications, stay hydrated, and be aware of local health advisories, especially in rural areas.
+                  Carry basic medications, stay hydrated, and be aware of local
+                  health advisories, especially in rural areas.
                 </p>
               </motion.div>
 
@@ -396,9 +469,12 @@ export default function AlertsPage() {
                 <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
                   <i className="fas fa-road text-orange-600 text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-3">Transportation Safety</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                  Transportation Safety
+                </h3>
                 <p className="text-slate-600 text-sm">
-                  Use licensed transport providers, wear seatbelts, and be cautious on mountain roads and during heavy traffic.
+                  Use licensed transport providers, wear seatbelts, and be
+                  cautious on mountain roads and during heavy traffic.
                 </p>
               </motion.div>
             </div>

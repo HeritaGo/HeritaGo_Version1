@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +22,8 @@ const forumPosts = [
     replies: 12,
     likes: 25,
     timeAgo: "2 hours ago",
-    excerpt: "Planning to visit Sigiriya next month. What's the best time of day to climb the rock?"
+    excerpt:
+      "Planning to visit Sigiriya next month. What's the best time of day to climb the rock?",
   },
   {
     id: 2,
@@ -32,7 +33,8 @@ const forumPosts = [
     replies: 8,
     likes: 18,
     timeAgo: "4 hours ago",
-    excerpt: "As a local guide, here are some amazing spots in Ella that most tourists miss..."
+    excerpt:
+      "As a local guide, here are some amazing spots in Ella that most tourists miss...",
   },
   {
     id: 3,
@@ -42,8 +44,9 @@ const forumPosts = [
     replies: 5,
     likes: 10,
     timeAgo: "6 hours ago",
-    excerpt: "Looking for professional camera gear rental in Colombo. Any recommendations?"
-  }
+    excerpt:
+      "Looking for professional camera gear rental in Colombo. Any recommendations?",
+  },
 ];
 
 const travelGroups = [
@@ -52,22 +55,23 @@ const travelGroups = [
     name: "Solo Travelers Sri Lanka",
     members: 1245,
     description: "Connect with fellow solo adventurers exploring Ceylon",
-    image: "/api/placeholder/300/200"
+    image: "/api/placeholder/300/200",
   },
   {
     id: 2,
     name: "Photography Tours LK",
     members: 892,
-    description: "Capture the beauty of Sri Lanka with like-minded photographers",
-    image: "/api/placeholder/300/200"
+    description:
+      "Capture the beauty of Sri Lanka with like-minded photographers",
+    image: "/api/placeholder/300/200",
   },
   {
     id: 3,
     name: "Cultural Heritage Explorers",
     members: 567,
     description: "Dive deep into Sri Lanka's rich cultural heritage",
-    image: "/api/placeholder/300/200"
-  }
+    image: "/api/placeholder/300/200",
+  },
 ];
 
 const chatRooms = [
@@ -76,22 +80,22 @@ const chatRooms = [
     name: "General Travel Chat",
     members: 234,
     lastMessage: "Anyone been to Yala recently?",
-    time: "5 min ago"
+    time: "5 min ago",
   },
   {
     id: 2,
     name: "Guides & Tourists",
     members: 156,
     lastMessage: "Available for Kandy tour tomorrow",
-    time: "12 min ago"
+    time: "12 min ago",
   },
   {
     id: 3,
     name: "Gear Exchange",
     members: 89,
     lastMessage: "Selling hiking boots size 42",
-    time: "1 hour ago"
-  }
+    time: "1 hour ago",
+  },
 ];
 
 export default function CommunityPage() {
@@ -101,18 +105,23 @@ export default function CommunityPage() {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case "tourist": return "bg-blue-100 text-blue-800";
-      case "guide": return "bg-green-100 text-green-800";
-      case "vendor": return "bg-orange-100 text-orange-800";
-      case "admin": return "bg-purple-100 text-purple-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "tourist":
+        return "bg-blue-100 text-blue-800";
+      case "guide":
+        return "bg-green-100 text-green-800";
+      case "vendor":
+        return "bg-orange-100 text-orange-800";
+      case "admin":
+        return "bg-purple-100 text-purple-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-r from-teal-600 to-orange-500 text-white">
@@ -125,7 +134,9 @@ export default function CommunityPage() {
             >
               <h1 className="text-5xl font-bold mb-6">Community Hub</h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-                Connect with fellow travelers, local guides, and vendors. Share experiences, get advice, and plan your perfect Sri Lankan adventure together.
+                Connect with fellow travelers, local guides, and vendors. Share
+                experiences, get advice, and plan your perfect Sri Lankan
+                adventure together.
               </p>
             </motion.div>
           </div>
@@ -230,16 +241,22 @@ export default function CommunityPage() {
                             <CardContent className="p-6">
                               <div className="flex items-start space-x-4">
                                 <Avatar>
-                                  <AvatarFallback>{post.author[0]}</AvatarFallback>
+                                  <AvatarFallback>
+                                    {post.author[0]}
+                                  </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-2 mb-2">
-                                    <h3 className="font-semibold text-lg">{post.title}</h3>
+                                    <h3 className="font-semibold text-lg">
+                                      {post.title}
+                                    </h3>
                                     <Badge className={getRoleColor(post.role)}>
                                       {post.role}
                                     </Badge>
                                   </div>
-                                  <p className="text-slate-600 mb-3">{post.excerpt}</p>
+                                  <p className="text-slate-600 mb-3">
+                                    {post.excerpt}
+                                  </p>
                                   <div className="flex items-center space-x-6 text-sm text-slate-500">
                                     <span>by {post.author}</span>
                                     <span>{post.timeAgo}</span>
@@ -320,8 +337,12 @@ export default function CommunityPage() {
                       <Card className="hover:shadow-lg transition-shadow duration-200">
                         <div className="h-48 bg-gradient-to-r from-teal-400 to-orange-400 rounded-t-lg"></div>
                         <CardContent className="p-6">
-                          <h3 className="font-semibold text-lg mb-2">{group.name}</h3>
-                          <p className="text-slate-600 text-sm mb-4">{group.description}</p>
+                          <h3 className="font-semibold text-lg mb-2">
+                            {group.name}
+                          </h3>
+                          <p className="text-slate-600 text-sm mb-4">
+                            {group.description}
+                          </p>
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-slate-500">
                               <i className="fas fa-users mr-1"></i>
@@ -352,7 +373,10 @@ export default function CommunityPage() {
                           </div>
                         </div>
                         <div className="flex space-x-2">
-                          <Input placeholder="Type your message..." className="flex-1" />
+                          <Input
+                            placeholder="Type your message..."
+                            className="flex-1"
+                          />
                           <Button>
                             <i className="fas fa-paper-plane"></i>
                           </Button>
@@ -360,7 +384,7 @@ export default function CommunityPage() {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   <div>
                     <Card>
                       <CardHeader>
@@ -369,13 +393,24 @@ export default function CommunityPage() {
                       <CardContent>
                         <div className="space-y-3">
                           {chatRooms.map((room) => (
-                            <div key={room.id} className="p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer">
+                            <div
+                              key={room.id}
+                              className="p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer"
+                            >
                               <div className="flex items-center justify-between mb-1">
-                                <span className="font-medium text-sm">{room.name}</span>
-                                <span className="text-xs text-slate-500">{room.members}</span>
+                                <span className="font-medium text-sm">
+                                  {room.name}
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  {room.members}
+                                </span>
                               </div>
-                              <p className="text-xs text-slate-600">{room.lastMessage}</p>
-                              <span className="text-xs text-slate-400">{room.time}</span>
+                              <p className="text-xs text-slate-600">
+                                {room.lastMessage}
+                              </p>
+                              <span className="text-xs text-slate-400">
+                                {room.time}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -389,8 +424,13 @@ export default function CommunityPage() {
               <TabsContent value="connections">
                 <div className="text-center py-16">
                   <i className="fas fa-users text-6xl text-slate-300 mb-4"></i>
-                  <h3 className="text-2xl font-semibold text-slate-600 mb-2">Connect with Fellow Travelers</h3>
-                  <p className="text-slate-500 mb-6">Find travel buddies, local guides, and trusted vendors for your Sri Lankan adventure</p>
+                  <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                    Connect with Fellow Travelers
+                  </h3>
+                  <p className="text-slate-500 mb-6">
+                    Find travel buddies, local guides, and trusted vendors for
+                    your Sri Lankan adventure
+                  </p>
                   <Button className="bg-teal-600 hover:bg-teal-700">
                     <i className="fas fa-search mr-2"></i>
                     Find Connections

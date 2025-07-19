@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import HotelCard from "@/components/ui/hotel-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,21 +20,34 @@ export default function HotelsPage() {
     queryKey: ["/api/hotels"],
   });
 
-  const amenities = ["WiFi", "Pool", "Restaurant", "Spa", "Gym", "Beach Access", "Mountain View", "Tea Tours"];
+  const amenities = [
+    "WiFi",
+    "Pool",
+    "Restaurant",
+    "Spa",
+    "Gym",
+    "Beach Access",
+    "Mountain View",
+    "Tea Tours",
+  ];
 
   const filteredHotels = hotels?.filter((hotel: any) => {
-    const matchesSearch = hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         hotel.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPrice = hotel.pricePerNight >= priceRange[0] && hotel.pricePerNight <= priceRange[1];
-    const matchesAmenities = selectedAmenities.length === 0 || 
-                           selectedAmenities.every(amenity => hotel.amenities?.includes(amenity));
+    const matchesSearch =
+      hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      hotel.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPrice =
+      hotel.pricePerNight >= priceRange[0] &&
+      hotel.pricePerNight <= priceRange[1];
+    const matchesAmenities =
+      selectedAmenities.length === 0 ||
+      selectedAmenities.every((amenity) => hotel.amenities?.includes(amenity));
     return matchesSearch && matchesPrice && matchesAmenities;
   });
 
   const toggleAmenity = (amenity: string) => {
-    setSelectedAmenities(prev => 
-      prev.includes(amenity) 
-        ? prev.filter(a => a !== amenity)
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((a) => a !== amenity)
         : [...prev, amenity]
     );
   };
@@ -42,7 +55,7 @@ export default function HotelsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-r from-teal-600 to-orange-500 text-white">
@@ -55,9 +68,10 @@ export default function HotelsPage() {
             >
               <h1 className="text-5xl font-bold mb-6">Stay in Paradise</h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-                From luxury beach resorts to cozy mountain lodges, find the perfect accommodation for your Sri Lankan adventure.
+                From luxury beach resorts to cozy mountain lodges, find the
+                perfect accommodation for your Sri Lankan adventure.
               </p>
-              
+
               <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <Input
                   placeholder="Search hotels by name or location..."
@@ -117,7 +131,11 @@ export default function HotelsPage() {
                         {amenities.map((amenity) => (
                           <Badge
                             key={amenity}
-                            variant={selectedAmenities.includes(amenity) ? "default" : "outline"}
+                            variant={
+                              selectedAmenities.includes(amenity)
+                                ? "default"
+                                : "outline"
+                            }
                             className="cursor-pointer mr-2 mb-2"
                             onClick={() => toggleAmenity(amenity)}
                           >
@@ -162,7 +180,10 @@ export default function HotelsPage() {
                 {isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[...Array(4)].map((_, i) => (
-                      <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                      <div
+                        key={i}
+                        className="bg-white rounded-2xl shadow-lg p-6 animate-pulse"
+                      >
                         <div className="bg-slate-200 h-48 rounded-xl mb-4"></div>
                         <div className="bg-slate-200 h-6 rounded mb-2"></div>
                         <div className="bg-slate-200 h-4 rounded mb-4"></div>
@@ -192,8 +213,12 @@ export default function HotelsPage() {
                     className="text-center py-16"
                   >
                     <i className="fas fa-hotel text-6xl text-slate-300 mb-4"></i>
-                    <h3 className="text-2xl font-semibold text-slate-600 mb-2">No hotels found</h3>
-                    <p className="text-slate-500">Try adjusting your search or filter criteria</p>
+                    <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                      No hotels found
+                    </h3>
+                    <p className="text-slate-500">
+                      Try adjusting your search or filter criteria
+                    </p>
                   </motion.div>
                 )}
               </div>

@@ -1,10 +1,10 @@
 import { useAuth } from "@/hooks/use-auth";
-import Navbar from "@/components/Navbar";
-import ChatBot from "@/components/ChatBot";
-import TouristDashboard from "@/components/dashboards/TouristDashboard";
-import GuideDashboard from "@/components/dashboards/GuideDashboard";
-import VendorDashboard from "@/components/dashboards/VendorDashboard";
-import AdminDashboard from "@/components/dashboards/AdminDashboard";
+import Navbar from "@/components/navbar";
+import Chatbot from "@/components/chatbot";
+import TouristDashboard from "@/components/dashboard/tourist-dashboard";
+import GuideDashboard from "@/components/dashboard/guide-dashboard";
+import VendorDashboard from "@/components/dashboard/vendor-dashboard";
+import AdminDashboard from "@/components/dashboard/admin-dashboard";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -28,10 +28,8 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-16">
-        {renderDashboard()}
-      </div>
-      <ChatBot />
+      <div className="pt-16">{renderDashboard()}</div>
+      <Chatbot />
     </div>
   );
 }

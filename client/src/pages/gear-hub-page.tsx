@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AIChatbot from "@/components/chatbot/ai-chatbot";
+import Chatbot from "@/components/chatbot";
 import GearCard from "@/components/ui/gear-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,16 +29,18 @@ export default function GearHubPage() {
   });
 
   const filteredGear = gearItems?.filter((gear: any) => {
-    const matchesSearch = gear.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         gear.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || gear.category === selectedCategory;
+    const matchesSearch =
+      gear.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      gear.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || gear.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
       <Navbar />
-      
+
       <div className="pt-16">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-r from-teal-600 to-orange-500 text-white">
@@ -51,9 +53,10 @@ export default function GearHubPage() {
             >
               <h1 className="text-5xl font-bold mb-6">Gear Hub</h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-                Rent professional equipment for your Sri Lankan adventure. From camping gear to photography equipment, we've got you covered.
+                Rent professional equipment for your Sri Lankan adventure. From
+                camping gear to photography equipment, we've got you covered.
               </p>
-              
+
               <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                   <div className="flex-1">
@@ -71,13 +74,15 @@ export default function GearHubPage() {
                     </Button>
                   )}
                 </div>
-                
+
                 {/* Category Filters */}
                 <div className="flex flex-wrap gap-3 justify-center">
                   {gearCategories.map((category) => (
                     <Badge
                       key={category.id}
-                      variant={selectedCategory === category.id ? "default" : "outline"}
+                      variant={
+                        selectedCategory === category.id ? "default" : "outline"
+                      }
                       className={`cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-200 ${
                         selectedCategory === category.id
                           ? "bg-white text-teal-600"
@@ -159,7 +164,10 @@ export default function GearHubPage() {
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                  <div
+                    key={i}
+                    className="bg-white rounded-2xl shadow-lg p-6 animate-pulse"
+                  >
                     <div className="bg-slate-200 h-48 rounded-xl mb-4"></div>
                     <div className="bg-slate-200 h-6 rounded mb-2"></div>
                     <div className="bg-slate-200 h-4 rounded mb-4"></div>
@@ -189,8 +197,12 @@ export default function GearHubPage() {
                 className="text-center py-16"
               >
                 <i className="fas fa-tools text-6xl text-slate-300 mb-4"></i>
-                <h3 className="text-2xl font-semibold text-slate-600 mb-2">No gear found</h3>
-                <p className="text-slate-500">Try adjusting your search or filter criteria</p>
+                <h3 className="text-2xl font-semibold text-slate-600 mb-2">
+                  No gear found
+                </h3>
+                <p className="text-slate-500">
+                  Try adjusting your search or filter criteria
+                </p>
               </motion.div>
             )}
           </div>
@@ -205,9 +217,12 @@ export default function GearHubPage() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">How It Works</h2>
+              <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                How It Works
+              </h2>
               <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                Renting gear is simple and secure with our verified vendor network
+                Renting gear is simple and secure with our verified vendor
+                network
               </p>
             </motion.div>
 
@@ -221,9 +236,12 @@ export default function GearHubPage() {
                 <div className="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <i className="fas fa-search text-white text-2xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">1. Browse & Select</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                  1. Browse & Select
+                </h3>
                 <p className="text-slate-600">
-                  Find the perfect equipment from our extensive catalog of verified gear
+                  Find the perfect equipment from our extensive catalog of
+                  verified gear
                 </p>
               </motion.div>
 
@@ -236,9 +254,12 @@ export default function GearHubPage() {
                 <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <i className="fas fa-calendar-check text-white text-2xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">2. Book & Pay</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                  2. Book & Pay
+                </h3>
                 <p className="text-slate-600">
-                  Reserve your dates and make secure payments through our platform
+                  Reserve your dates and make secure payments through our
+                  platform
                 </p>
               </motion.div>
 
@@ -251,9 +272,12 @@ export default function GearHubPage() {
                 <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <i className="fas fa-handshake text-white text-2xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">3. Collect & Enjoy</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                  3. Collect & Enjoy
+                </h3>
                 <p className="text-slate-600">
-                  Pick up your gear and embark on your Sri Lankan adventure with confidence
+                  Pick up your gear and embark on your Sri Lankan adventure with
+                  confidence
                 </p>
               </motion.div>
             </div>
