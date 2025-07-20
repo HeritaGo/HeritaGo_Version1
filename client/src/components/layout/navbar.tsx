@@ -18,6 +18,8 @@ export default function Navbar() {
   const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const { data: alerts } = useQuery({
     queryKey: ["/api/alerts"],
@@ -26,12 +28,29 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      
+      // Set glassmorphism effect
+      setIsScrolled(currentScrollY > 50);
+      
+      // Handle navbar visibility
+      if (currentScrollY < 10) {
+        // Always show at top
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past threshold - hide
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const navigation = [
     { name: 'Home', href: '/', icon: 'fas fa-home' },
@@ -70,11 +89,17 @@ export default function Navbar() {
   return (
     <motion.nav
       initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
+      animate={{ 
+        y: isVisible ? 0 : -100,
+        opacity: isVisible ? 1 : 0
+      }}
+      transition={{ 
+        duration: 0.3,
+        ease: "easeInOut"
+      }}
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'glassmorphism-dark shadow-lg' 
+          ? 'glassmorphism-dark shadow-lg backdrop-blur-md' 
           : 'bg-transparent'
       }`}
     >
@@ -87,12 +112,13 @@ export default function Navbar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                <i className="fas fa-mountain text-white text-lg"></i>
+              <div>
+                <img 
+                  src="/images/logoW.png" // Update this path to your PNG location (e.g., /logo.png or /assets/logo.png)
+                  alt="HeritaGo Logo"
+                  className="w-30 h-30"
+                />
               </div>
-              <span className="text-xl font-bold text-white font-display">
-                HeritaGo
-              </span>
             </motion.div>
           </Link>
 

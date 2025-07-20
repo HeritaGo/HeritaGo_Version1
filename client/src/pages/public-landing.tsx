@@ -8,7 +8,45 @@ import { useAuth } from "@/hooks/use-auth";
 import Navigation from "@/components/navigation";
 import WeatherWidget from "@/components/weather-widget";
 import InteractiveMap from "@/components/interactive-map";
+import { useState, useEffect } from "react";
 
+const heroCarouselImages = [
+  "/images/hero1.jpg",
+  "/images/hero2.jpg",
+  "/images/hero3.jpg",
+  "/images/hero4.jpg",
+  "/images/hero5.jpg",
+  "/images/hero6.jpg",
+];
+
+function HeroCarousel({ images }: { images: string[] }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((i) => (i + 1) % images.length), 4000);
+    return () => clearInterval(timer);
+  }, [images.length]);
+
+  return (
+    <div className="absolute inset-0 w-full h-full z-0">
+      {images.map((img, i) => (
+        <motion.img
+          key={img}
+          src={img}
+          alt=""
+          className="object-cover w-full h-full absolute inset-0 transition-opacity duration-1000"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: i === index ? 1 : 0 }}
+          transition={{ duration: 1 }}
+          style={{ zIndex: i === index ? 1 : 0 }}
+        />
+      ))}
+    
+      {/* White overlay ON TOP of images */}
+      <div className="absolute inset-0 bg-white/50 z-10 pointer-events-none" />
+    </div>
+  );
+}
 const destinations = [
   {
     id: 1,
@@ -71,66 +109,75 @@ export default function PublicLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-orange-50">
+   
       <Navigation />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 pb-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-teal-600/10 to-orange-600/10" />
-        <motion.div 
+
+        <HeroCarousel images={heroCarouselImages} />
+
+        {/* Glassmorphism Overlay */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-96 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-2xl" />
+
+        {/* Additional gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-600/20 to-orange-600/20" />
+
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
         >
-          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent mb-6">
+          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent mb-6 mt-28 drop-shadow-sm">
             Discover Ceylon
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Experience the wonder of Sri Lanka through authentic journeys, expert guidance, and AI-powered travel assistance
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            {!user ? (
-              <>
-                <Link href="/auth">
-                  <Button size="lg" className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white px-8 py-3">
-                    Start Your Journey
-                  </Button>
-                </Link>
-                <Button variant="outline" size="lg" className="border-teal-600 text-teal-600 hover:bg-teal-50 px-8 py-3">
-                  Explore Without Login
-                </Button>
-              </>
-            ) : (
-              <Link href="/dashboard">
-                <Button size="lg" className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white px-8 py-3">
-                  Go to Dashboard
-                </Button>
-              </Link>
-            )}
-          </div>
+    <p className="text-xl md:text-2xl text-gray-800 mb-8 max-w-3xl mx-auto font-medium drop-shadow-sm">
+      Experience the wonder of Sri Lanka through authentic journeys, expert guidance, and AI-powered travel assistance
+    </p>
+    
+    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+      {!user ? (
+        <>
+          <Link href="/auth">
+            <Button size="lg" className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+              Start Your Journey
+            </Button>
+          </Link>
+          <Button variant="outline" size="lg" className="border-teal-600/70 text-teal-700 hover:bg-teal-50/80 px-8 py-3 backdrop-blur-sm bg-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+            Explore Without Login
+          </Button>
+        </>
+      ) : (
+        <Link href="/dashboard">
+          <Button size="lg" className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+            Go to Dashboard
+          </Button>
+        </Link>
+      )}
+    </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-            {[
-              { value: "25K+", label: "Happy Travelers" },
-              { value: "200+", label: "Destinations" },
-              { value: "150+", label: "Expert Guides" },
-              { value: "24/7", label: "AI Assistant" }
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div className="text-3xl md:text-4xl font-bold text-teal-600 mb-2">{stat.value}</div>
-                <div className="text-gray-600">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
+    {/* Stats */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+      {[
+        { value: "25K+", label: "Happy Travelers" },
+        { value: "200+", label: "Destinations" },
+        { value: "150+", label: "Expert Guides" },
+        { value: "24/7", label: "AI Assistant" }
+      ].map((stat, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.1 }}
+          className="text-center p-4 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg"
+        >
+          <div className="text-3xl md:text-4xl font-bold text-teal-700 mb-2 drop-shadow-sm">{stat.value}</div>
+          <div className="text-gray-700 font-medium">{stat.label}</div>
         </motion.div>
+      ))}
+    </div>
+  </motion.div>
       </section>
 
       {/* Weather Widget */}
@@ -299,9 +346,13 @@ export default function PublicLanding() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-teal-400 to-orange-400 bg-clip-text text-transparent">
-                HeritaGo
-              </h3>
+              <div>
+                <img 
+                  src="/images/logoW.png" // Update this path to your PNG location (e.g., /logo.png or /assets/logo.png)
+                  alt="HeritaGo Logo"
+                  className="w-26 h-28"
+                />
+              </div>
               <p className="text-gray-400">
                 Your gateway to authentic Sri Lankan experiences
               </p>
