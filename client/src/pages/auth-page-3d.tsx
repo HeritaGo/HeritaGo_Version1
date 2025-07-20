@@ -156,19 +156,17 @@ export default function AuthPage3D() {
             style={{ transformStyle: 'preserve-3d' }}
           >
             {/* 3D Card Shadow */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.3 }}
               transition={{ delay: 0.5, duration: 0.8 }}
               className="absolute inset-0 bg-gradient-to-r from-teal-600/20 to-orange-600/20 rounded-2xl blur-xl transform translate-x-4 translate-y-4 -z-10"
               style={{ transform: 'translateZ(-20px) rotateX(45deg)' }}
-            />
+            /> */}
 
             <motion.div
               whileHover={{ 
                 scale: 1.02,
-                rotateX: 5,
-                rotateY: 5,
                 z: 20
               }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}

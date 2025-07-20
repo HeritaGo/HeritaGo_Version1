@@ -88,7 +88,7 @@ export default function AuthPage() {
           transition={{ duration: 0.8 }}
           className="text-center text-white"
         >
-          <div className="w-24 h-24 bg-white bg-opacity-20 rounded-3xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm">
+          <div className="w-24 h-24 bg-white bg-opacity-20 rounded-3xl flex items-center justify-center mx-auto mb-8">
             <i className="fas fa-mountain text-4xl"></i>
           </div>
           <h1 className="text-5xl font-bold mb-6">HeritaGo</h1>
@@ -96,19 +96,19 @@ export default function AuthPage() {
             Explore Ceylon like never before with AI-powered travel planning and local expertise.
           </p>
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4 backdrop-blur-sm">
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="text-2xl font-bold">25K+</div>
               <div className="text-sm opacity-80">Happy Travelers</div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-4 backdrop-blur-sm">
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="text-2xl font-bold">200+</div>
               <div className="text-sm opacity-80">Destinations</div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-4 backdrop-blur-sm">
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="text-2xl font-bold">150+</div>
               <div className="text-sm opacity-80">Expert Guides</div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-4 backdrop-blur-sm">
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="text-2xl font-bold">24/7</div>
               <div className="text-sm opacity-80">AI Assistant</div>
             </div>
@@ -124,7 +124,7 @@ export default function AuthPage() {
           transition={{ duration: 0.8 }}
           className="w-full max-w-md"
         >
-          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0">
+          <Card className="bg-white/95 shadow-2xl border-0">
             <CardHeader className="text-center pb-6">
               <CardTitle className="text-2xl font-bold text-slate-800">
                 Welcome to HeritaGo
