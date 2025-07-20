@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
@@ -21,6 +21,10 @@ import {
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  
   const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
 
@@ -33,6 +37,34 @@ export default function Navigation() {
     { href: "/alerts", label: "Alerts", icon: Bell },
   ];
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Set glassmorphism effect
+      setIsScrolled(currentScrollY > 50);
+      
+      // Handle navbar visibility
+      if (currentScrollY < 10) {
+        // Always show at top
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past threshold - hide
+        setIsVisible(false);
+        // Close mobile menu when hiding navbar
+        setIsMobileMenuOpen(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   const isActive = (href: string) => {
     if (href === "/" && location === "/") return true;
     if (href !== "/" && location.startsWith(href)) return true;
@@ -44,8 +76,12 @@ export default function Navigation() {
   };
 
   const getUserInitials = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    if (user?.fullName) {
+      const names = user.fullName.split(" ");
+      if (names.length >= 2) {
+        return `${names[0][0]}${names[1][0]}`.toUpperCase();
+      }
+      return names[0][0].toUpperCase();
     }
     return user?.username?.[0]?.toUpperCase() || "U";
   };
@@ -61,7 +97,22 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 glassmorphism-dark">
+    <motion.nav 
+      initial={{ y: 0 }}
+      animate={{ 
+        y: isVisible ? 0 : -100,
+        opacity: isVisible ? 1 : 0
+      }}
+      transition={{ 
+        duration: 0.3,
+        ease: "easeInOut"
+      }}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'glassmorphism-dark shadow-lg backdrop-blur-md' 
+          : 'glassmorphism-dark'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -71,10 +122,13 @@ export default function Navigation() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-lg flex items-center justify-center">
-                <Mountain className="w-6 h-6 text-white" />
+              <div>
+                <img 
+                  src="/images/logoW.png" // Update this path to your PNG location (e.g., /logo.png or /assets/logo.png)
+                  alt="HeritaGo Logo"
+                  className="w-26 h-28"
+                />
               </div>
-              <span className="text-xl font-bold text-white">HeritaGo</span>
             </motion.div>
           </Link>
 
@@ -131,7 +185,7 @@ export default function Navigation() {
                   </Avatar>
                   <div className="hidden lg:block">
                     <div className="text-sm text-white font-medium">
-                      {user.firstName || user.username}
+                      {user.fullName || user.username}
                     </div>
                     <Badge className={`text-xs ${getRoleColor(user.role)}`}>
                       {user.role}
@@ -233,6 +287,6 @@ export default function Navigation() {
           )}
         </AnimatePresence>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
