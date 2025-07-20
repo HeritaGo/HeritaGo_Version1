@@ -6,11 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/hooks/use-auth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { AI_CHATBOT_RESPONSES, QUICK_CHAT_ACTIONS } from "@/lib/sample-data";
-import { useToast } from "@/hooks/use-toast";
 
 interface ChatMessage {
   id: string;
@@ -19,45 +14,59 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+// Mock API request function with smart responses
+const apiRequest = async (message: string) => {
+  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+  
+  const msg = message.toLowerCase();
+  let response = "";
+  
+  if (msg.includes('trip') || msg.includes('plan')) {
+    response = "I'd love to help you plan your Sri Lankan adventure! For a 3-day trip, I recommend visiting Colombo (Day 1), Kandy (Day 2), and Sigiriya (Day 3). Would you like specific recommendations for each location?";
+  } else if (msg.includes('hotel')) {
+    response = "Here are some great hotels near Kandy under LKR 10,000 per night:\n\n• Hotel Suisse - LKR 8,500/night\n• Queens Hotel - LKR 9,200/night\n• Hotel Topaz - LKR 7,800/night\n\nWould you like more details about any of these options?";
+  } else if (msg.includes('weather')) {
+    response = "Today in Colombo: Partly cloudy with temperatures around 28°C (82°F). There's a 30% chance of afternoon showers. Perfect weather for exploring the city! Don't forget your umbrella just in case.";
+  } else if (msg.includes('emergency')) {
+    response = "Important Sri Lanka Emergency Contacts:\n\n• Police: 119\n• Fire & Ambulance: 110\n• Tourist Helpline: 1912\n• Tourist Police: +94 11 242 1052\n\nStay safe and keep these numbers handy during your travels!";
+  } else if (msg.includes('food') || msg.includes('eat')) {
+    response = "Sri Lankan cuisine is incredible! Must-try dishes:\n\n• Rice & Curry - The national dish\n• Kottu Roti - Stir-fried bread with vegetables\n• Hoppers - Bowl-shaped pancakes\n• Fish Ambul Thiyal - Sour fish curry\n\nWould you like restaurant recommendations in any specific city?";
+  } else if (msg.includes('transport') || msg.includes('travel')) {
+    response = "Getting around Sri Lanka:\n\n• Tuk-tuks - Great for short distances\n• Trains - Scenic routes, especially to Kandy\n• Buses - Economical but can be crowded\n• Private drivers - Most comfortable option\n\nFor long distances, I recommend hiring a driver. Would you like contact details?";
+  } else if (msg.includes('beach') || msg.includes('coast')) {
+    response = "Sri Lanka has stunning beaches! Top recommendations:\n\n• Unawatuna - Great for swimming and snorkeling\n• Mirissa - Perfect for whale watching\n• Arugam Bay - World-class surfing\n• Bentota - Water sports and luxury resorts\n\nWhich type of beach experience are you looking for?";
+  } else if (msg.includes('culture') || msg.includes('temple')) {
+    response = "Sri Lanka's cultural treasures:\n\n• Temple of the Tooth, Kandy - Sacred Buddhist relic\n• Sigiriya Rock Fortress - Ancient royal citadel\n• Dambulla Cave Temple - Golden temple complex\n• Polonnaruwa - Ancient capital ruins\n\nRemember to dress modestly when visiting temples. Need specific visiting hours?";
+  } else {
+    response = "Thank you for your message! I'm here to help with travel planning, hotel recommendations, weather updates, food suggestions, transport options, beaches, cultural sites, and emergency information for Sri Lanka. What would you like to know more about?";
+  }
+  
+  return response;
+};
+
+const QUICK_CHAT_ACTIONS = [
+  "Help me plan a 3-day trip to Sri Lanka",
+  "Show me hotels near Kandy under LKR 10,000 per night", 
+  "What's the weather like in Colombo today?",
+  "I need emergency contact information for Sri Lanka",
+  "Best Sri Lankan food to try",
+  "How to get around Sri Lanka"
+];
+
 export default function AIChatbot() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: AI_CHATBOT_RESPONSES.WELCOME,
+      content: "Hello! I'm your AI travel assistant for Sri Lanka. How can I help you explore the Pearl of the Indian Ocean today?",
       isUser: false,
       timestamp: new Date(),
     }
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const chatMutation = useMutation({
-    mutationFn: async (message: string) => {
-      const response = await apiRequest("POST", "/api/chat", { 
-        message,
-        userId: user?.id 
-      });
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setIsTyping(false);
-      addMessage(data.response, false);
-    },
-    onError: (error) => {
-      setIsTyping(false);
-      toast({
-        title: "Chat Error",
-        description: "Failed to get AI response. Please try again.",
-        variant: "destructive",
-      });
-      console.error("Chat error:", error);
-    },
-  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -78,19 +87,31 @@ export default function AIChatbot() {
   };
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isLoading) return;
 
     const userMessage = inputMessage.trim();
     setInputMessage("");
     addMessage(userMessage, true);
     setIsTyping(true);
+    setIsLoading(true);
 
-    chatMutation.mutate(userMessage);
+    try {
+      const response = await apiRequest(userMessage);
+      setIsTyping(false);
+      addMessage(response, false);
+    } catch (error) {
+      setIsTyping(false);
+      addMessage("Sorry, I'm having trouble connecting right now. Please try again in a moment.", false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleQuickAction = (action: string) => {
     setInputMessage(action);
-    handleSendMessage();
+    setTimeout(() => {
+      handleSendMessage();
+    }, 100);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -144,7 +165,7 @@ export default function AIChatbot() {
             ) : (
               <motion.i
                 key="chat"
-                className="fas fa-robot text-xl"
+                className="fas fa-comment text-xl"
                 initial={{ rotate: 90, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
                 exit={{ rotate: -90, opacity: 0 }}
@@ -184,7 +205,7 @@ export default function AIChatbot() {
                     <div className="relative">
                       <Avatar className="h-10 w-10 bg-white/20">
                         <AvatarFallback className="bg-transparent text-white">
-                          <i className="fas fa-robot text-lg"></i>
+                          <i className="fas fa-comment text-lg"></i>
                         </AvatarFallback>
                       </Avatar>
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
@@ -216,7 +237,7 @@ export default function AIChatbot() {
                           {!message.isUser && (
                             <Avatar className="h-8 w-8 bg-gradient-to-r from-teal-500 to-emerald-500 flex-shrink-0">
                               <AvatarFallback className="bg-transparent text-white">
-                                <i className="fas fa-robot text-sm"></i>
+                                <i className="fas fa-comment text-sm"></i>
                               </AvatarFallback>
                             </Avatar>
                           )}
@@ -226,7 +247,7 @@ export default function AIChatbot() {
                               ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white' 
                               : 'bg-gray-100 text-gray-800'
                           }`}>
-                            <p className="text-sm leading-relaxed">{message.content}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
                             <p className={`text-xs mt-1 ${
                               message.isUser ? 'text-white/70' : 'text-gray-500'
                             }`}>
@@ -234,10 +255,10 @@ export default function AIChatbot() {
                             </p>
                           </div>
 
-                          {message.isUser && user && (
+                          {message.isUser && (
                             <Avatar className="h-8 w-8 flex-shrink-0">
                               <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                                {user.fullName.charAt(0)}
+                                U
                               </AvatarFallback>
                             </Avatar>
                           )}
@@ -255,7 +276,7 @@ export default function AIChatbot() {
                         <div className="flex items-end space-x-2">
                           <Avatar className="h-8 w-8 bg-gradient-to-r from-teal-500 to-emerald-500">
                             <AvatarFallback className="bg-transparent text-white">
-                              <i className="fas fa-robot text-sm"></i>
+                              <i className="fas fa-comment text-sm"></i>
                             </AvatarFallback>
                           </Avatar>
                           <div className="bg-gray-100 rounded-2xl p-3">
@@ -283,8 +304,9 @@ export default function AIChatbot() {
                       onClick={() => handleQuickAction(action)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      disabled={isLoading}
                     >
-                      {action}
+                      {action.length > 30 ? action.substring(0, 30) + '...' : action}
                     </motion.button>
                   ))}
                 </div>
@@ -299,14 +321,14 @@ export default function AIChatbot() {
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     className="flex-1 border-gray-300 focus:ring-teal-500 focus:border-teal-500"
-                    disabled={chatMutation.isPending}
+                    disabled={isLoading}
                   />
                   <Button
                     onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || chatMutation.isPending}
+                    disabled={!inputMessage.trim() || isLoading}
                     className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
                   >
-                    {chatMutation.isPending ? (
+                    {isLoading ? (
                       <i className="fas fa-spinner animate-spin"></i>
                     ) : (
                       <i className="fas fa-paper-plane"></i>
